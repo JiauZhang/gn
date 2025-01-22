@@ -15,6 +15,8 @@
 #include "gn/err.h"
 #include "gn/parse_tree.h"
 
+class OutputStream;
+
 extern const char kGrammar_Help[];
 
 struct ParserHelper;
@@ -151,8 +153,6 @@ struct ParserHelper {
 
 // Renders parse subtree as a formatted text, indenting by the given number of
 // spaces.
-void RenderToText(const base::Value& node,
-                  int indent_level,
-                  std::ostringstream& os);
+void RenderToText(const base::Value& node, int indent_level, OutputStream& os);
 
 #endif  // TOOLS_GN_PARSER_H_

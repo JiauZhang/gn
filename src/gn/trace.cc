@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <map>
 #include <mutex>
-#include <sstream>
 #include <vector>
 
 #include "base/command_line.h"
@@ -20,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "gn/filesystem_utils.h"
 #include "gn/label.h"
+#include "gn/output_stream.h"
 
 namespace {
 
@@ -72,18 +72,18 @@ bool CoalescedDurationGreater(const Coalesced& a, const Coalesced& b) {
   return a.total_duration > b.total_duration;
 }
 
-void SummarizeParses(std::vector<const TraceItem*>& loads, std::ostream& out) {
+void SummarizeParses(std::vector<const TraceItem*>& loads, OutputStream& out) {
   out << "File parse times: (time in ms, name)\n";
 
   std::sort(loads.begin(), loads.end(), &DurationGreater);
   for (auto* load : loads) {
     out << base::StringPrintf(" %8.2f  ", load->delta().InMillisecondsF());
-    out << load->name() << std::endl;
+    out << load->name() << "\n";
   }
 }
 
 void SummarizeCoalesced(std::vector<const TraceItem*>& items,
-                        std::ostream& out) {
+                        OutputStream& out) {
   // Group by file name.
   std::map<std::string, Coalesced> coalesced;
   for (auto* item : items) {
@@ -101,18 +101,18 @@ void SummarizeCoalesced(std::vector<const TraceItem*>& items,
 
   for (const auto& cur : sorted) {
     out << base::StringPrintf(" %8.2f  %d  ", cur.total_duration, cur.count);
-    out << *cur.name_ptr << std::endl;
+    out << *cur.name_ptr << "\n";
   }
 }
 
 void SummarizeFileExecs(std::vector<const TraceItem*>& execs,
-                        std::ostream& out) {
+                        OutputStream& out) {
   out << "File execute times: (total time in ms, # executions, name)\n";
   SummarizeCoalesced(execs, out);
 }
 
 void SummarizeScriptExecs(std::vector<const TraceItem*>& execs,
-                          std::ostream& out) {
+                          OutputStream& out) {
   out << "Script execute times: (total time in ms, # executions, name)\n";
   SummarizeCoalesced(execs, out);
 }
@@ -223,13 +223,13 @@ std::string SummarizeTraces() {
     }
   }
 
-  std::ostringstream out;
+  StringOutputStream out;
   SummarizeParses(parses, out);
-  out << std::endl;
+  out << "\n";
   SummarizeFileExecs(file_execs, out);
-  out << std::endl;
+  out << "\n";
   SummarizeScriptExecs(script_execs, out);
-  out << std::endl;
+  out << "\n";
 
   // Generally there will only be one header check, but it's theoretically
   // possible for more than one to run if more than one build is going in
@@ -248,7 +248,7 @@ std::string SummarizeTraces() {
 }
 
 void SaveTraces(const base::FilePath& file_name) {
-  std::ostringstream out;
+  StringOutputStream out;
 
   out << "{\"traceEvents\":[";
 

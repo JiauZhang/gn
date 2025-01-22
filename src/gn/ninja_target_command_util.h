@@ -12,6 +12,7 @@
 #include "gn/escape.h"
 #include "gn/filesystem_utils.h"
 #include "gn/frameworks_utils.h"
+#include "gn/output_stream.h"
 #include "gn/path_output.h"
 #include "gn/target.h"
 #include "gn/toolchain.h"
@@ -21,7 +22,7 @@ struct DefineWriter {
   DefineWriter() { options.mode = ESCAPE_NINJA_COMMAND; }
   DefineWriter(EscapingMode mode) { options.mode = mode; }
 
-  void operator()(const std::string& s, std::ostream& out) const {
+  void operator()(const std::string& s, OutputStream& out) const {
     out << " ";
     EscapeStringToStream(out, "-D" + s, options);
   }
@@ -35,8 +36,8 @@ struct FrameworkDirsWriter {
 
   ~FrameworkDirsWriter() = default;
 
-  void operator()(const SourceDir& d, std::ostream& out) const {
-    std::ostringstream path_out;
+  void operator()(const SourceDir& d, OutputStream& out) const {
+    StringOutputStream path_out;
     path_output_.WriteDir(path_out, d, PathOutput::DIR_NO_LAST_SLASH);
     const std::string& path = path_out.str();
     if (path[0] == '"')
@@ -57,7 +58,7 @@ struct FrameworksWriter {
     options_.mode = mode;
   }
 
-  void operator()(const std::string& s, std::ostream& out) const {
+  void operator()(const std::string& s, OutputStream& out) const {
     out << " " << tool_switch_;
     std::string_view framework_name = GetFrameworkName(s);
     EscapeStringToStream(out, framework_name, options_);
@@ -71,8 +72,8 @@ struct IncludeWriter {
   explicit IncludeWriter(PathOutput& path_output) : path_output_(path_output) {}
   ~IncludeWriter() = default;
 
-  void operator()(const SourceDir& d, std::ostream& out) const {
-    std::ostringstream path_out;
+  void operator()(const SourceDir& d, OutputStream& out) const {
+    StringOutputStream path_out;
     path_output_.WriteDir(path_out, d, PathOutput::DIR_NO_LAST_SLASH);
     const std::string& path = path_out.str();
     if (path[0] == '"')
@@ -101,7 +102,7 @@ void WriteOneFlag(RecursiveWriterConfig config,
                       const,
                   EscapeOptions flag_escape_options,
                   PathOutput& path_output,
-                  std::ostream& out,
+                  OutputStream& out,
                   bool write_substitution = true,
                   bool indent = false);
 

@@ -4,13 +4,14 @@
 
 #include "gn/string_output_buffer.h"
 
+#include <fstream>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "gn/err.h"
 #include "gn/file_writer.h"
 #include "gn/filesystem_utils.h"
-
-#include <fstream>
+#include "gn/output_stream.h"
 
 std::string StringOutputBuffer::str() const {
   std::string result;

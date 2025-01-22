@@ -9,7 +9,7 @@
 #include "gn/target.h"
 
 NinjaBundleDataTargetWriter::NinjaBundleDataTargetWriter(const Target* target,
-                                                         std::ostream& out)
+                                                         OutputStream& out)
     : NinjaTargetWriter(target, out) {}
 
 NinjaBundleDataTargetWriter::~NinjaBundleDataTargetWriter() = default;

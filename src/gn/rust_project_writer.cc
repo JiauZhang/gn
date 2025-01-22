@@ -4,9 +4,7 @@
 
 #include "gn/rust_project_writer.h"
 
-#include <fstream>
 #include <optional>
-#include <sstream>
 #include <tuple>
 
 #include "base/json/string_escape.h"
@@ -72,9 +70,7 @@ bool RustProjectWriter::RunAndWriteFiles(const BuildSettings* build_settings,
   std::vector<const Target*> all_targets = builder.GetAllResolvedTargets();
 
   StringOutputBuffer out_buffer;
-  std::ostream out(&out_buffer);
-
-  RenderJSON(build_settings, all_targets, out);
+  RenderJSON(build_settings, all_targets, out_buffer);
   return out_buffer.WriteToFileIfChanged(output_path, err);
 }
 
@@ -248,7 +244,7 @@ void AddTarget(const BuildSettings* build_settings,
 void WriteCrates(const BuildSettings* build_settings,
                  CrateList& crate_list,
                  std::optional<std::string>& sysroot,
-                 std::ostream& rust_project) {
+                 OutputStream& rust_project) {
   rust_project << "{" NEWLINE;
 
   // If a sysroot was found, then that can be used to tell rust-analyzer where
@@ -390,7 +386,7 @@ void WriteCrates(const BuildSettings* build_settings,
 
 void RustProjectWriter::RenderJSON(const BuildSettings* build_settings,
                                    std::vector<const Target*>& all_targets,
-                                   std::ostream& rust_project) {
+                                   OutputStream& rust_project) {
   TargetIndexMap lookup;
   CrateList crate_list;
   std::optional<std::string> rust_sysroot;

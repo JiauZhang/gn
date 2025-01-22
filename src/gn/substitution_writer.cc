@@ -9,6 +9,7 @@
 #include "gn/escape.h"
 #include "gn/filesystem_utils.h"
 #include "gn/output_file.h"
+#include "gn/output_stream.h"
 #include "gn/rust_substitution_type.h"
 #include "gn/rust_tool.h"
 #include "gn/settings.h"
@@ -150,7 +151,7 @@ Examples
 void SubstitutionWriter::WriteWithNinjaVariables(
     const SubstitutionPattern& pattern,
     const EscapeOptions& escape_options,
-    std::ostream& out) {
+    OutputStream& out) {
   // The result needs to be quoted as if it was one string, but the $ for
   // the inserted Ninja variables can't be escaped. So write to a buffer with
   // no quoting, and then quote the whole thing if necessary.
@@ -322,7 +323,7 @@ void SubstitutionWriter::WriteNinjaVariablesForSource(
     const SourceFile& source,
     const std::vector<const Substitution*>& types,
     const EscapeOptions& escape_options,
-    std::ostream& out) {
+    OutputStream& out) {
   for (const auto& type : types) {
     // Don't write SOURCE since that just maps to Ninja's $in variable, which
     // is implicit in the rule. RESPONSE_FILE_NAME is written separately
@@ -335,7 +336,7 @@ void SubstitutionWriter::WriteNinjaVariablesForSource(
           GetSourceSubstitution(target, settings, source, type, OUTPUT_RELATIVE,
                                 settings->build_settings()->build_dir()),
           escape_options);
-      out << std::endl;
+      out << "\n";
     }
   }
 }

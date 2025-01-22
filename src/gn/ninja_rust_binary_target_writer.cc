@@ -4,8 +4,6 @@
 
 #include "gn/ninja_rust_binary_target_writer.h"
 
-#include <sstream>
-
 #include "base/strings/string_util.h"
 #include "gn/deps_iterator.h"
 #include "gn/filesystem_utils.h"
@@ -29,16 +27,16 @@ EscapeOptions GetFlagOptions() {
 void WriteVar(const char* name,
               const std::string& value,
               EscapeOptions opts,
-              std::ostream& out) {
+              OutputStream& out) {
   out << name << " = ";
   EscapeStringToStream(out, value, opts);
-  out << std::endl;
+  out << "\n";
 }
 
 void WriteCrateVars(const Target* target,
                     const Tool* tool,
                     EscapeOptions opts,
-                    std::ostream& out) {
+                    OutputStream& out) {
   WriteVar(kRustSubstitutionCrateName.ninja_name,
            target->rust_values().crate_name(), opts, out);
 
@@ -100,7 +98,7 @@ void WriteCrateVars(const Target* target,
 }  // namespace
 
 NinjaRustBinaryTargetWriter::NinjaRustBinaryTargetWriter(const Target* target,
-                                                         std::ostream& out)
+                                                         OutputStream& out)
     : NinjaBinaryTargetWriter(target, out),
       tool_(target->toolchain()->GetToolForTargetFinalOutputAsRust(target)) {}
 
@@ -265,7 +263,7 @@ void NinjaRustBinaryTargetWriter::WriteSourcesAndInputs() {
     out_ << " ";
     path_output_.WriteFile(out_, OutputFile(settings_->build_settings(), data));
   }
-  out_ << std::endl;
+  out_ << "\n";
 }
 
 void NinjaRustBinaryTargetWriter::WriteExternsAndDeps(
@@ -353,7 +351,7 @@ void NinjaRustBinaryTargetWriter::WriteExternsAndDeps(
     }
   }
 
-  out_ << std::endl;
+  out_ << "\n";
   out_ << "  rustdeps =";
 
   for (const SourceDir& dir : private_extern_dirs) {
@@ -385,11 +383,11 @@ void NinjaRustBinaryTargetWriter::WriteExternsAndDeps(
   WriteFrameworks(out_, tool_);
   WriteSwiftModules(out_, tool_, swiftmodules);
 
-  out_ << std::endl;
+  out_ << "\n";
   out_ << "  ldflags =";
   // If rustc will invoke a linker, linker flags need to be forwarded through to
   // the linker.
   WriteCustomLinkerFlags(out_, tool_);
 
-  out_ << std::endl;
+  out_ << "\n";
 }

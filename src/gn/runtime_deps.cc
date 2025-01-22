@@ -6,7 +6,6 @@
 
 #include <map>
 #include <set>
-#include <sstream>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -212,13 +211,12 @@ bool WriteRuntimeDepsFile(const OutputFile& output_file,
   base::FilePath data_deps_file =
       target->settings()->build_settings()->GetFullPath(output_as_source);
 
-  StringOutputBuffer storage;
-  std::ostream contents(&storage);
+  StringOutputBuffer contents;
   for (const auto& pair : ComputeRuntimeDeps(target))
-    contents << pair.first.value() << std::endl;
+    contents << pair.first.value() << "\n";
 
   ScopedTrace trace(TraceItem::TRACE_FILE_WRITE, output_as_source.value());
-  return storage.WriteToFileIfChanged(data_deps_file, err);
+  return contents.WriteToFileIfChanged(data_deps_file, err);
 }
 
 }  // namespace

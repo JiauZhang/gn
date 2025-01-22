@@ -35,8 +35,8 @@ class NinjaBuildWriter {
                    const std::vector<const Target*>& all_targets,
                    const Toolchain* default_toolchain,
                    const std::vector<const Target*>& default_toolchain_targets,
-                   std::ostream& out,
-                   std::ostream& dep_out);
+                   OutputStream& out,
+                   OutputStream& dep_out);
   ~NinjaBuildWriter();
 
   // The design of this class is that this static factory function takes the
@@ -92,8 +92,8 @@ class NinjaBuildWriter {
   const Toolchain* default_toolchain_;
   const std::vector<const Target*>& default_toolchain_targets_;
 
-  std::ostream& out_;
-  std::ostream& dep_out_;
+  OutputStream& out_;
+  OutputStream& dep_out_;
   PathOutput path_output_;
 
   NinjaBuildWriter(const NinjaBuildWriter&) = delete;

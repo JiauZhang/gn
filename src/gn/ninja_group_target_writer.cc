@@ -11,7 +11,7 @@
 #include "gn/target.h"
 
 NinjaGroupTargetWriter::NinjaGroupTargetWriter(const Target* target,
-                                               std::ostream& out)
+                                               OutputStream& out)
     : NinjaTargetWriter(target, out) {}
 
 NinjaGroupTargetWriter::~NinjaGroupTargetWriter() = default;

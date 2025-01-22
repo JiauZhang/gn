@@ -34,7 +34,7 @@ class NinjaToolchainWriter {
 
   NinjaToolchainWriter(const Settings* settings,
                        const Toolchain* toolchain,
-                       std::ostream& out);
+                       OutputStream& out);
   ~NinjaToolchainWriter();
 
   void Run(const std::vector<NinjaWriter::TargetRulePair>& extra_rules);
@@ -51,7 +51,7 @@ class NinjaToolchainWriter {
 
   const Settings* settings_;
   const Toolchain* toolchain_;
-  std::ostream& out_;
+  OutputStream& out_;
   PathOutput path_output_;
 
   NinjaToolchainWriter(const NinjaToolchainWriter&) = delete;

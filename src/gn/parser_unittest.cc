@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <sstream>
-
-#include "gn/input_file.h"
 #include "gn/parser.h"
+#include "gn/input_file.h"
+#include "gn/output_stream.h"
 #include "gn/tokenizer.h"
 #include "util/test/test.h"
 
@@ -30,7 +29,7 @@ void DoParserPrintTest(const char* input, const char* expected) {
     err.PrintToStdout();
   ASSERT_TRUE(result);
 
-  std::ostringstream collector;
+  StringOutputStream collector;
   RenderToText(result->GetJSONNode(), 0, collector);
 
   EXPECT_EQ(expected, collector.str());
@@ -46,7 +45,7 @@ void DoExpressionPrintTest(const char* input, const char* expected) {
   std::unique_ptr<ParseNode> result = Parser::ParseExpression(tokens, &err);
   ASSERT_TRUE(result);
 
-  std::ostringstream collector;
+  StringOutputStream collector;
   RenderToText(result->GetJSONNode(), 0, collector);
 
   EXPECT_EQ(expected, collector.str());

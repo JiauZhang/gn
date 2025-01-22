@@ -10,7 +10,7 @@
 // Writes a .ninja file for a group target type.
 class NinjaGeneratedFileTargetWriter : public NinjaTargetWriter {
  public:
-  NinjaGeneratedFileTargetWriter(const Target* target, std::ostream& out);
+  NinjaGeneratedFileTargetWriter(const Target* target, OutputStream& out);
   ~NinjaGeneratedFileTargetWriter() override;
 
   void Run() override;

@@ -11,11 +11,12 @@
 #include "gn/ninja_target_writer.h"
 
 class OutputFile;
+class OutputStream;
 
 // Writes a .ninja file for a action target type.
 class NinjaActionTargetWriter : public NinjaTargetWriter {
  public:
-  NinjaActionTargetWriter(const Target* target, std::ostream& out);
+  NinjaActionTargetWriter(const Target* target, OutputStream& out);
   ~NinjaActionTargetWriter() override;
 
   void Run() override;

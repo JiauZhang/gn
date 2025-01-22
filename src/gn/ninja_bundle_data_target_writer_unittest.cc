@@ -5,8 +5,8 @@
 #include "gn/ninja_bundle_data_target_writer.h"
 
 #include <algorithm>
-#include <sstream>
 
+#include "gn/output_stream.h"
 #include "gn/target.h"
 #include "gn/test_with_scope.h"
 #include "util/test/test.h"
@@ -41,7 +41,7 @@ TEST(NinjaBundleDataTargetWriter, Run) {
   bundle_data.visibility().SetPublic();
   ASSERT_TRUE(bundle_data.OnResolved(&err));
 
-  std::ostringstream out;
+  StringOutputStream out;
   NinjaBundleDataTargetWriter writer(&bundle_data, out);
   writer.Run();
 

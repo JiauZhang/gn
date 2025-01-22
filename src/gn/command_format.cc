@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <sstream>
-
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -17,6 +15,7 @@
 #include "gn/commands.h"
 #include "gn/filesystem_utils.h"
 #include "gn/input_file.h"
+#include "gn/output_stream.h"
 #include "gn/parser.h"
 #include "gn/scheduler.h"
 #include "gn/setup.h"
@@ -1240,7 +1239,7 @@ void DoFormat(const ParseNode* root,
               std::string* output,
               std::string* dump_output) {
   if (dump_tree == TreeDumpMode::kPlainText) {
-    std::ostringstream os;
+    StringOutputStream os;
     RenderToText(root->GetJSONNode(), 0, os);
     *dump_output = os.str();
   } else if (dump_tree == TreeDumpMode::kJSON) {

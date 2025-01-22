@@ -5,7 +5,6 @@
 #include "gn/compile_commands_writer.h"
 
 #include <memory>
-#include <sstream>
 #include <utility>
 
 #include "gn/config.h"

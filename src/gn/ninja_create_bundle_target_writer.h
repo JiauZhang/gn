@@ -12,7 +12,7 @@ class BundleFileRule;
 // Writes a .ninja file for a bundle_data target type.
 class NinjaCreateBundleTargetWriter : public NinjaTargetWriter {
  public:
-  NinjaCreateBundleTargetWriter(const Target* target, std::ostream& out);
+  NinjaCreateBundleTargetWriter(const Target* target, OutputStream& out);
   ~NinjaCreateBundleTargetWriter() override;
 
   void Run() override;

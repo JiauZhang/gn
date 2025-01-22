@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <sstream>
-
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -14,6 +12,7 @@
 #include "gn/functions.h"
 #include "gn/input_file.h"
 #include "gn/output_conversion.h"
+#include "gn/output_stream.h"
 #include "gn/parse_tree.h"
 #include "gn/scheduler.h"
 #include "gn/string_output_buffer.h"
@@ -90,8 +89,7 @@ Value RunWriteFile(Scope* scope,
 
   // Compute output.
   StringOutputBuffer storage;
-  std::ostream contents(&storage);
-  ConvertValueToOutput(scope->settings(), args[1], output_conversion, contents,
+  ConvertValueToOutput(scope->settings(), args[1], output_conversion, storage,
                        err);
   if (err->has_error())
     return Value();

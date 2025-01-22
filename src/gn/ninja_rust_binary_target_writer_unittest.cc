@@ -6,6 +6,7 @@
 
 #include "gn/config.h"
 #include "gn/label_ptr.h"
+#include "gn/output_stream.h"
 #include "gn/pool.h"
 #include "gn/rust_values.h"
 #include "gn/scheduler.h"
@@ -49,7 +50,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RustExecutable) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -104,7 +105,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibDeps) {
   ASSERT_TRUE(private_rlib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&private_rlib, out);
     writer.Run();
 
@@ -146,7 +147,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibDeps) {
   ASSERT_TRUE(far_public_rlib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&far_public_rlib, out);
     writer.Run();
 
@@ -188,7 +189,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibDeps) {
   ASSERT_TRUE(public_rlib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&public_rlib, out);
     writer.Run();
 
@@ -244,7 +245,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibDeps) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -297,7 +298,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, DylibDeps) {
   ASSERT_TRUE(private_inside_dylib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&private_inside_dylib, out);
     writer.Run();
 
@@ -338,7 +339,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, DylibDeps) {
   ASSERT_TRUE(inside_dylib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&inside_dylib, out);
     writer.Run();
 
@@ -382,7 +383,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, DylibDeps) {
   ASSERT_TRUE(dylib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&dylib, out);
     writer.Run();
 
@@ -455,7 +456,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, DylibDeps) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -507,7 +508,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibDepsAcrossGroups) {
   ASSERT_TRUE(procmacro.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&procmacro, out);
     writer.Run();
 
@@ -563,7 +564,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibDepsAcrossGroups) {
   ASSERT_TRUE(rlib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&rlib, out);
     writer.Run();
 
@@ -610,7 +611,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibDepsAcrossGroups) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -702,7 +703,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RenamedDeps) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -805,7 +806,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, NonRustDeps) {
   ASSERT_TRUE(nonrust.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&nonrust, out);
     writer.Run();
 
@@ -852,7 +853,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, NonRustDeps) {
   ASSERT_TRUE(nonrust_only.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&nonrust_only, out);
     writer.Run();
 
@@ -893,7 +894,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, NonRustDeps) {
   ASSERT_TRUE(rstaticlib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&rstaticlib, out);
     writer.Run();
 
@@ -1065,7 +1066,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibInLibrary) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  std::ostringstream out;
+  StringOutputStream out;
   NinjaRustBinaryTargetWriter writer(&target, out);
   writer.Run();
 
@@ -1131,7 +1132,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RustOutputExtensionAndDir) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1198,7 +1199,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, LibsAndLibDirs) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1298,7 +1299,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RlibWithLibDeps) {
   ASSERT_TRUE(rlib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&rlib, out);
     writer.Run();
 
@@ -1382,7 +1383,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RustProcMacro) {
   ASSERT_TRUE(procmacro.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&procmacro, out);
     writer.Run();
 
@@ -1429,7 +1430,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, RustProcMacro) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1475,7 +1476,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, GroupDeps) {
   ASSERT_TRUE(rlib.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&rlib, out);
     writer.Run();
 
@@ -1524,7 +1525,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, GroupDeps) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1579,7 +1580,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, Externs) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1628,7 +1629,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, Inputs) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1676,7 +1677,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, CdylibDeps) {
   cdylib.SetToolchain(setup.toolchain());
   ASSERT_TRUE(cdylib.OnResolved(&err));
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&cdylib, out);
     writer.Run();
     const char expected[] =
@@ -1716,7 +1717,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, CdylibDeps) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1793,7 +1794,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, TransitivePublicNonRustDeps) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1878,7 +1879,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, TransitiveRustDepsThroughSourceSet) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   {
-    std::ostringstream out;
+    StringOutputStream out;
     NinjaRustBinaryTargetWriter writer(&target, out);
     writer.Run();
 
@@ -1932,7 +1933,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, Pool) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  std::ostringstream out;
+  StringOutputStream out;
   NinjaBinaryTargetWriter writer(&target, out);
   writer.Run();
 
@@ -2005,7 +2006,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, FrameworksAndFrameworkDirs) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  std::ostringstream out;
+  StringOutputStream out;
   NinjaRustBinaryTargetWriter writer(&target, out);
   writer.Run();
 
@@ -2063,7 +2064,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, SwiftModule) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  std::ostringstream out;
+  StringOutputStream out;
   NinjaRustBinaryTargetWriter writer(&target, out);
   writer.Run();
 

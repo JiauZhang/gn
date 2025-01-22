@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gn/ninja_group_target_writer.h"
+#include "gn/output_stream.h"
 #include "gn/target.h"
 #include "gn/test_with_scope.h"
 #include "util/test/test.h"
@@ -49,7 +50,7 @@ TEST(NinjaGroupTargetWriter, Run) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  std::ostringstream out;
+  StringOutputStream out;
   NinjaGroupTargetWriter writer(&target, out);
   writer.Run();
 

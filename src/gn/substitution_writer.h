@@ -13,6 +13,7 @@
 
 struct EscapeOptions;
 class OutputFile;
+class OutputStream;
 class Settings;
 class SourceDir;
 class SourceFile;
@@ -62,7 +63,7 @@ class SubstitutionWriter {
   // Ninja variables replacing the patterns.
   static void WriteWithNinjaVariables(const SubstitutionPattern& pattern,
                                       const EscapeOptions& escape_options,
-                                      std::ostream& out);
+                                      OutputStream& out);
 
   // NOP substitutions ---------------------------------------------------------
 
@@ -157,7 +158,7 @@ class SubstitutionWriter {
       const SourceFile& source,
       const std::vector<const Substitution*>& types,
       const EscapeOptions& escape_options,
-      std::ostream& out);
+      OutputStream& out);
 
   // Extracts the given type of substitution related to a source file from the
   // given source file. If output_style is OUTPUT_RELATIVE, relative_to

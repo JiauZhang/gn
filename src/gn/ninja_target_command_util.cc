@@ -50,7 +50,7 @@ void WriteOneFlag(RecursiveWriterConfig config,
                       const,
                   EscapeOptions flag_escape_options,
                   PathOutput& path_output,
-                  std::ostream& out,
+                  OutputStream& out,
                   bool write_substitution,
                   bool indent) {
   if (!target->toolchain()->substitution_bits().used.count(subst_enum))
@@ -103,7 +103,7 @@ void WriteOneFlag(RecursiveWriterConfig config,
   }
 
   if (write_substitution)
-    out << std::endl;
+    out << "\n";
 }
 
 void GetPCHOutputFiles(const Target* target,

@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <sstream>
 #include <utility>
 
 #include "base/command_line.h"

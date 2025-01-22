@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <sstream>
-
+#include "gn/substitution_writer.h"
 #include "gn/c_substitution_type.h"
 #include "gn/err.h"
 #include "gn/escape.h"
+#include "gn/output_stream.h"
 #include "gn/substitution_list.h"
 #include "gn/substitution_pattern.h"
-#include "gn/substitution_writer.h"
 #include "gn/target.h"
 #include "gn/test_with_scope.h"
 #include "util/build_config.h"
@@ -77,7 +76,7 @@ TEST(SubstitutionWriter, WriteNinjaVariablesForSource) {
   EscapeOptions options;
   options.mode = ESCAPE_NONE;
 
-  std::ostringstream out;
+  StringOutputStream out;
   SubstitutionWriter::WriteNinjaVariablesForSource(
       nullptr, setup.settings(), SourceFile("//foo/bar/baz.txt"), types,
       options, out);
@@ -100,7 +99,7 @@ TEST(SubstitutionWriter, WriteWithNinjaVariables) {
   EscapeOptions options;
   options.mode = ESCAPE_NONE;
 
-  std::ostringstream out;
+  StringOutputStream out;
   SubstitutionWriter::WriteWithNinjaVariables(pattern, options, out);
 
   EXPECT_EQ("-i ${in} --out=bar\"${source_name_part}\".o", out.str());

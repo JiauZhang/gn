@@ -69,12 +69,11 @@ TEST(StringOutput, WrappedByStdOstream) {
   const size_t span_size = data_size / num_spans;
 
   StringOutputBuffer buffer;
-  std::ostream out(&buffer);
 
   for (size_t n = 0; n < num_spans; ++n) {
     size_t start_offset = n * span_size;
     size_t end_offset = std::min(start_offset + span_size, data.size());
-    out << std::string_view(&data[start_offset], end_offset - start_offset);
+    buffer << std::string_view(&data[start_offset], end_offset - start_offset);
   }
 
   EXPECT_EQ(data.size(), buffer.size());

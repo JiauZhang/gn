@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/string_util.h"
+#include "gn/output_stream.h"
 #include "gn/test_with_scope.h"
 #include "gn/visual_studio_utils.h"
 #include "util/test/test.h"
@@ -191,7 +192,7 @@ TEST_F(VisualStudioWriterTest, NoDotSlash) {
 
   VisualStudioWriter::SourceFileCompileTypePairs source_types;
 
-  std::stringstream file_contents;
+  StringOutputStream file_contents;
   writer.WriteProjectFileContents(file_contents, *writer.projects_.back(),
                                   &target, "", "", &source_types, &err);
 
@@ -226,7 +227,7 @@ TEST_F(VisualStudioWriterTest, NinjaExecutable) {
 
   VisualStudioWriter::SourceFileCompileTypePairs source_types;
 
-  std::stringstream file_contents_without_flag;
+  StringOutputStream file_contents_without_flag;
   writer.WriteProjectFileContents(file_contents_without_flag,
                                   *writer.projects_.back(), &target, "", "",
                                   &source_types, &err);
@@ -235,7 +236,7 @@ TEST_F(VisualStudioWriterTest, NinjaExecutable) {
   ASSERT_NE(file_contents_without_flag.str().find("call ninja.exe"),
             std::string::npos);
 
-  std::stringstream file_contents_with_flag;
+  StringOutputStream file_contents_with_flag;
   writer.WriteProjectFileContents(file_contents_with_flag,
                                   *writer.projects_.back(), &target, "",
                                   "ninja_wrapper.exe", &source_types, &err);

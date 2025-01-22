@@ -9,6 +9,7 @@
 #include <string>
 
 class Err;
+class OutputStream;
 class Settings;
 class Value;
 
@@ -20,7 +21,7 @@ class Value;
 void ConvertValueToOutput(const Settings* settings,
                           const Value& output,
                           const Value& output_conversion_value,
-                          std::ostream& out,
+                          OutputStream& out,
                           Err* err);
 
 #endif  // TOOLS_GN_OUTPUT_CONVERSION_H_
