@@ -11,15 +11,13 @@
 #include "gn/toolchain.h"
 #include "gn/unique_vector.h"
 
-class OutputStream;
-
 struct EscapeOptions;
 
 // Writes a .ninja file for a binary target type (an executable, a shared
 // library, or a static library).
 class NinjaBinaryTargetWriter : public NinjaTargetWriter {
  public:
-  NinjaBinaryTargetWriter(const Target* target, OutputStream& out);
+  NinjaBinaryTargetWriter(const Target* target, std::ostream& out);
   ~NinjaBinaryTargetWriter() override;
 
   void Run() override;
@@ -63,17 +61,17 @@ class NinjaBinaryTargetWriter : public NinjaTargetWriter {
                               bool can_write_source_info = true,
                               bool restat_output_allowed = false);
 
-  void WriteLinkerFlags(OutputStream& out,
+  void WriteLinkerFlags(std::ostream& out,
                         const Tool* tool,
                         const SourceFile* optional_def_file);
-  void WriteCustomLinkerFlags(OutputStream& out, const Tool* tool);
-  void WriteLibrarySearchPath(OutputStream& out, const Tool* tool);
-  void WriteLibs(OutputStream& out, const Tool* tool);
-  void WriteFrameworks(OutputStream& out, const Tool* tool);
-  void WriteSwiftModules(OutputStream& out,
+  void WriteCustomLinkerFlags(std::ostream& out, const Tool* tool);
+  void WriteLibrarySearchPath(std::ostream& out, const Tool* tool);
+  void WriteLibs(std::ostream& out, const Tool* tool);
+  void WriteFrameworks(std::ostream& out, const Tool* tool);
+  void WriteSwiftModules(std::ostream& out,
                          const Tool* tool,
                          const std::vector<OutputFile>& swiftmodules);
-  void WritePool(OutputStream& out);
+  void WritePool(std::ostream& out);
 
   void AddSourceSetFiles(const Target* source_set,
                          UniqueVector<OutputFile>* obj_files) const;

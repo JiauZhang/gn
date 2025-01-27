@@ -4,6 +4,8 @@
 
 #include "gn/ninja_binary_target_writer.h"
 
+#include <sstream>
+
 #include "base/strings/string_util.h"
 #include "gn/builtin_tool.h"
 #include "gn/config_values_extractors.h"
@@ -14,7 +16,6 @@
 #include "gn/ninja_rust_binary_target_writer.h"
 #include "gn/ninja_target_command_util.h"
 #include "gn/ninja_utils.h"
-#include "gn/output_stream.h"
 #include "gn/pool.h"
 #include "gn/settings.h"
 #include "gn/string_utils.h"
@@ -34,7 +35,7 @@ EscapeOptions GetFlagOptions() {
 }  // namespace
 
 NinjaBinaryTargetWriter::NinjaBinaryTargetWriter(const Target* target,
-                                                 OutputStream& out)
+                                                 std::ostream& out)
     : NinjaTargetWriter(target, out),
       rule_prefix_(GetNinjaRulePrefixForToolchain(settings_)) {}
 
@@ -118,7 +119,7 @@ NinjaBinaryTargetWriter::WriteInputsStampOrPhonyAndGetDep(
     path_output_.WriteFile(out_, *input);
   }
 
-  out_ << "\n";
+  out_ << std::endl;
   return {stamp_or_phony};
 }
 
@@ -291,22 +292,22 @@ void NinjaBinaryTargetWriter::WriteCompilerBuildLine(
     out_ << " ||";
     path_output_.WriteFiles(out_, order_only_deps);
   }
-  out_ << "\n";
+  out_ << std::endl;
 
   if (!sources.empty() && can_write_source_info) {
     out_ << "  " << "source_file_part = " << sources[0].GetName();
-    out_ << "\n";
+    out_ << std::endl;
     out_ << "  " << "source_name_part = "
          << FindFilenameNoExtension(&sources[0].value());
-    out_ << "\n";
+    out_ << std::endl;
   }
 
   if (restat_output_allowed) {
-    out_ << "  restat = 1\n";
+    out_ << "  restat = 1" << std::endl;
   }
 }
 
-void NinjaBinaryTargetWriter::WriteCustomLinkerFlags(OutputStream& out,
+void NinjaBinaryTargetWriter::WriteCustomLinkerFlags(std::ostream& out,
                                                      const Tool* tool) {
   if (tool->AsC() || (tool->AsRust() && tool->AsRust()->MayLink())) {
     // First the ldflags from the target and its config.
@@ -316,7 +317,7 @@ void NinjaBinaryTargetWriter::WriteCustomLinkerFlags(OutputStream& out,
   }
 }
 
-void NinjaBinaryTargetWriter::WriteLibrarySearchPath(OutputStream& out,
+void NinjaBinaryTargetWriter::WriteLibrarySearchPath(std::ostream& out,
                                                      const Tool* tool) {
   // Write library search paths that have been recursively pushed
   // through the dependency tree.
@@ -350,7 +351,7 @@ void NinjaBinaryTargetWriter::WriteLibrarySearchPath(OutputStream& out,
 }
 
 void NinjaBinaryTargetWriter::WriteLinkerFlags(
-    OutputStream& out,
+    std::ostream& out,
     const Tool* tool,
     const SourceFile* optional_def_file) {
   // First any ldflags
@@ -364,7 +365,7 @@ void NinjaBinaryTargetWriter::WriteLinkerFlags(
   }
 }
 
-void NinjaBinaryTargetWriter::WriteLibs(OutputStream& out, const Tool* tool) {
+void NinjaBinaryTargetWriter::WriteLibs(std::ostream& out, const Tool* tool) {
   // Libraries that have been recursively pushed through the dependency tree.
   // Since we're passing these on the command line to the linker and not
   // to Ninja, we need to do shell escaping.
@@ -387,7 +388,7 @@ void NinjaBinaryTargetWriter::WriteLibs(OutputStream& out, const Tool* tool) {
   }
 }
 
-void NinjaBinaryTargetWriter::WriteFrameworks(OutputStream& out,
+void NinjaBinaryTargetWriter::WriteFrameworks(std::ostream& out,
                                               const Tool* tool) {
   // Frameworks that have been recursively pushed through the dependency tree.
   FrameworksWriter writer(tool->framework_switch());
@@ -404,7 +405,7 @@ void NinjaBinaryTargetWriter::WriteFrameworks(OutputStream& out,
 }
 
 void NinjaBinaryTargetWriter::WriteSwiftModules(
-    OutputStream& out,
+    std::ostream& out,
     const Tool* tool,
     const std::vector<OutputFile>& swiftmodules) {
   // Since we're passing these on the command line to the linker and not
@@ -419,11 +420,11 @@ void NinjaBinaryTargetWriter::WriteSwiftModules(
   }
 }
 
-void NinjaBinaryTargetWriter::WritePool(OutputStream& out) {
+void NinjaBinaryTargetWriter::WritePool(std::ostream& out) {
   if (target_->pool().ptr) {
     out << "  pool = ";
     out << target_->pool().ptr->GetNinjaName(
         settings_->default_toolchain_label());
-    out << "\n";
+    out << std::endl;
   }
 }

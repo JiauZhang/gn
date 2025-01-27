@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <sstream>
 
 #include "gn/config.h"
 #include "gn/ninja_action_target_writer.h"
-#include "gn/output_stream.h"
 #include "gn/pool.h"
 #include "gn/substitution_list.h"
 #include "gn/target.h"
@@ -27,7 +27,7 @@ TEST(NinjaActionTargetWriter, WriteOutputFilesForBuildLine) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
 
   SourceFile source("//foo/bar.in");
@@ -57,7 +57,7 @@ TEST(NinjaActionTargetWriter, ActionNoSources) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -99,7 +99,7 @@ TEST(NinjaActionTargetWriter, ActionNoSourcesConsole) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -141,7 +141,7 @@ TEST(NinjaActionTargetWriter, ActionWithSources) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -198,7 +198,7 @@ TEST(NinjaActionTargetWriter, ActionWithOrderOnlyDeps) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -269,7 +269,7 @@ TEST(NinjaActionTargetWriter, ForEach) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -337,7 +337,7 @@ TEST(NinjaActionTargetWriter, ForEachWithDepfile) {
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
   setup.build_settings()->set_ninja_required_version(Version{1, 9, 0});
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -394,7 +394,7 @@ TEST(NinjaActionTargetWriter, ForEachWithResponseFile) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -452,7 +452,7 @@ TEST(NinjaActionTargetWriter, ForEachWithPool) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/usr/bin/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 
@@ -499,7 +499,7 @@ TEST(NinjaActionTargetWriter, NoTransitiveHardDeps) {
   ASSERT_TRUE(foo.OnResolved(&err));
 
   {
-    StringOutputStream out;
+    std::ostringstream out;
     NinjaActionTargetWriter writer(&foo, out);
     writer.Run();
 
@@ -528,7 +528,7 @@ TEST(NinjaActionTargetWriter, NoTransitiveHardDeps) {
   ASSERT_TRUE(bar.OnResolved(&err)) << err.message();
 
   {
-    StringOutputStream out;
+    std::ostringstream out;
     NinjaActionTargetWriter writer(&bar, out);
     writer.Run();
 
@@ -583,7 +583,7 @@ TEST(NinjaActionTargetWriter, SeesConfig) {
   ASSERT_TRUE(foo.OnResolved(&err));
 
   {
-    StringOutputStream out;
+    std::ostringstream out;
     NinjaActionTargetWriter writer(&foo, out);
     writer.Run();
 
@@ -629,7 +629,7 @@ TEST(NinjaActionTargetWriter, ActionWithSpaces) {
   setup.build_settings()->set_python_path(
       base::FilePath(FILE_PATH_LITERAL("/Program Files/python")));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaActionTargetWriter writer(&target, out);
   writer.Run();
 

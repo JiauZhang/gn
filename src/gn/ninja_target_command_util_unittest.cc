@@ -5,8 +5,8 @@
 #include "gn/ninja_target_command_util.h"
 
 #include <algorithm>
+#include <sstream>
 
-#include "gn/output_stream.h"
 #include "util/build_config.h"
 #include "util/test/test.h"
 
@@ -16,7 +16,7 @@ namespace {
 // the generated output as a string.
 template <typename Writer, typename Item>
 std::string FormatWithWriter(Writer writer, std::vector<Item> items) {
-  StringOutputStream out;
+  std::ostringstream out;
   for (const Item& item : items) {
     writer(item, out);
   }
@@ -36,7 +36,7 @@ void TestWriter(Writer writer,
   // see the difference in the error message (by default the error message
   // would just be "formatted == expected").
   if (formatted != expected) {
-    StringOutputStream stream;
+    std::ostringstream stream;
     stream << '"' << expected << "\" == \"" << formatted << '"';
     std::string message = stream.str();
 

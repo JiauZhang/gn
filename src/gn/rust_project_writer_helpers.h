@@ -5,7 +5,9 @@
 #ifndef TOOLS_GN_RUST_PROJECT_WRITER_HELPERS_H_
 #define TOOLS_GN_RUST_PROJECT_WRITER_HELPERS_H_
 
+#include <fstream>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -16,8 +18,6 @@
 #include "build_settings.h"
 #include "gn/source_file.h"
 #include "gn/target.h"
-
-class OutputStream;
 
 // These are internal types and helper functions for RustProjectWriter that have
 // been extracted for easier testability.
@@ -130,7 +130,7 @@ using CrateList = std::vector<Crate>;
 void WriteCrates(const BuildSettings* build_settings,
                  CrateList& crate_list,
                  std::optional<std::string>& sysroot,
-                 OutputStream& rust_project);
+                 std::ostream& rust_project);
 
 // Assemble the compiler arguments for the given GN Target.
 std::vector<std::string> ExtractCompilerArgs(const Target* target);

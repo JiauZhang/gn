@@ -14,7 +14,7 @@
 // library, or a static library).
 class NinjaRustBinaryTargetWriter : public NinjaBinaryTargetWriter {
  public:
-  NinjaRustBinaryTargetWriter(const Target* target, OutputStream& out);
+  NinjaRustBinaryTargetWriter(const Target* target, std::ostream& out);
   ~NinjaRustBinaryTargetWriter() override;
 
   void Run() override;

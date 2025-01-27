@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include <fstream>
 #include <map>
 #include <set>
+#include <sstream>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -21,7 +23,6 @@
 #include "gn/input_file_manager.h"
 #include "gn/loader.h"
 #include "gn/ninja_utils.h"
-#include "gn/output_stream.h"
 #include "gn/pool.h"
 #include "gn/scheduler.h"
 #include "gn/string_atom.h"
@@ -198,8 +199,8 @@ NinjaBuildWriter::NinjaBuildWriter(
     const std::vector<const Target*>& all_targets,
     const Toolchain* default_toolchain,
     const std::vector<const Target*>& default_toolchain_targets,
-    OutputStream& out,
-    OutputStream& dep_out)
+    std::ostream& out,
+    std::ostream& dep_out)
     : build_settings_(build_settings),
       used_toolchains_(used_toolchains),
       all_targets_(all_targets),
@@ -253,8 +254,8 @@ bool NinjaBuildWriter::RunAndWriteFile(const BuildSettings* build_settings,
     }
   }
 
-  StringOutputStream file;
-  StringOutputStream depfile;
+  std::stringstream file;
+  std::stringstream depfile;
   NinjaBuildWriter gen(build_settings, used_toolchains, all_targets,
                        default_toolchain, default_toolchain_targets, file,
                        depfile);
@@ -307,7 +308,7 @@ bool NinjaBuildWriter::RunAndWriteFile(const BuildSettings* build_settings,
 // static
 std::string NinjaBuildWriter::ExtractRegenerationCommands(
     std::istream& build_ninja_in) {
-  StringOutputStream out;
+  std::ostringstream out;
   int num_blank_lines = 0;
   for (std::string line; std::getline(build_ninja_in, line);) {
     out << line << '\n';
@@ -379,7 +380,7 @@ void NinjaBuildWriter::WriteNinjaRules() {
 
   sorter.IterateOver(item_callback);
 
-  out_ << "\n";
+  out_ << std::endl;
 }
 
 void NinjaBuildWriter::WriteAllPools() {
@@ -414,9 +415,9 @@ void NinjaBuildWriter::WriteAllPools() {
     std::string name = pool_name(pool);
     if (name == "console")
       continue;
-    out_ << "pool " << name << "\n"
-         << "  depth = " << pool->depth() << "\n"
-         << "\n";
+    out_ << "pool " << name << std::endl
+         << "  depth = " << pool->depth() << std::endl
+         << std::endl;
   }
 }
 
@@ -452,11 +453,11 @@ bool NinjaBuildWriter::WriteSubninjas(Err* err) {
 
     out_ << "subninja ";
     path_output_.WriteFile(out_, subninja);
-    out_ << "\n";
+    out_ << std::endl;
     previous_subninja = subninja;
     previous_toolchain = pair.second;
   }
-  out_ << "\n";
+  out_ << std::endl;
   return true;
 }
 
@@ -674,22 +675,22 @@ bool NinjaBuildWriter::WritePhonyAndAllRules(Err* err) {
       }
     }
   }
-  out_ << "\n";
+  out_ << std::endl;
 
   if (default_target) {
     // Use the short name when available
     if (written_rules.find(StringAtom("default")) != written_rules.end()) {
-      out_ << "\ndefault default\n";
+      out_ << "\ndefault default" << std::endl;
     } else if (default_target->has_dependency_output()) {
       // If the default target does not have a dependency output file or phony,
       // then the target specified as default is a no-op. We omit the default
       // statement entirely to avoid ninja runtime failure.
       out_ << "\ndefault ";
       path_output_.WriteFile(out_, default_target->dependency_output());
-      out_ << "\n";
+      out_ << std::endl;
     }
   } else if (!default_toolchain_targets_.empty()) {
-    out_ << "\ndefault all\n";
+    out_ << "\ndefault all" << std::endl;
   }
 
   return true;
@@ -710,5 +711,5 @@ void NinjaBuildWriter::WritePhonyRule(const Target* target,
   if (target->has_dependency_output()) {
     path_output_.WriteFile(out_, target->dependency_output());
   }
-  out_ << "\n";
+  out_ << std::endl;
 }

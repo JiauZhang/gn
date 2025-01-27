@@ -5,7 +5,6 @@
 #include "gn/config_values_extractors.h"
 
 #include "gn/escape.h"
-#include "gn/output_stream.h"
 
 namespace {
 
@@ -14,7 +13,7 @@ class EscapedStringWriter {
   explicit EscapedStringWriter(const EscapeOptions& escape_options)
       : escape_options_(escape_options) {}
 
-  void operator()(const std::string& s, OutputStream& out) const {
+  void operator()(const std::string& s, std::ostream& out) const {
     out << " ";
     EscapeStringToStream(out, s, escape_options_);
   }
@@ -30,7 +29,7 @@ void RecursiveTargetConfigStringsToStream(
     const Target* target,
     const std::vector<std::string>& (ConfigValues::*getter)() const,
     const EscapeOptions& escape_options,
-    OutputStream& out) {
+    std::ostream& out) {
   RecursiveTargetConfigToStream(config, target, getter,
                                 EscapedStringWriter(escape_options), out);
 }

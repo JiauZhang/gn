@@ -4,6 +4,7 @@
 
 #include "gn/eclipse_writer.h"
 
+#include <fstream>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -11,7 +12,6 @@
 #include "gn/config_values_extractors.h"
 #include "gn/filesystem_utils.h"
 #include "gn/loader.h"
-#include "gn/output_stream.h"
 #include "gn/xml_element_writer.h"
 
 namespace {
@@ -37,7 +37,7 @@ std::string EscapeForXML(const std::string& unescaped) {
 
 EclipseWriter::EclipseWriter(const BuildSettings* build_settings,
                              const Builder& builder,
-                             OutputStream& out)
+                             std::ostream& out)
     : build_settings_(build_settings), builder_(builder), out_(out) {
   languages_.push_back("C++ Source File");
   languages_.push_back("C Source File");
@@ -55,7 +55,9 @@ bool EclipseWriter::RunAndWriteFile(const BuildSettings* build_settings,
                                     Err* err) {
   base::FilePath file = build_settings->GetFullPath(build_settings->build_dir())
                             .AppendASCII("eclipse-cdt-settings.xml");
-  FileOutputStream file_out(FilePathToUTF8(file).c_str());
+  std::ofstream file_out;
+  file_out.open(FilePathToUTF8(file).c_str(),
+                std::ios_base::out | std::ios_base::binary);
   if (file_out.fail()) {
     *err =
         Err(Location(), "Couldn't open eclipse-cdt-settings.xml for writing");
@@ -117,7 +119,7 @@ bool EclipseWriter::UsesDefaultToolchain(const Target* target) const {
 }
 
 void EclipseWriter::WriteCDTSettings() {
-  out_ << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  out_ << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
   XmlElementWriter cdt_properties_element(out_, "cdtprojectproperties",
                                           XmlAttributes());
 

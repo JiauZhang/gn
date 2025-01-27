@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -30,7 +31,6 @@
 #include "gn/filesystem_utils.h"
 #include "gn/item.h"
 #include "gn/loader.h"
-#include "gn/output_stream.h"
 #include "gn/scheduler.h"
 #include "gn/settings.h"
 #include "gn/source_file.h"
@@ -551,7 +551,8 @@ bool XcodeWorkspace::WriteWorkspaceDataFile(const std::string& name,
   if (source_file.is_null())
     return false;
 
-  StringOutputBuffer out;
+  StringOutputBuffer storage;
+  std::ostream out(&storage);
   out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       << "<Workspace\n"
       << "   version = \"1.0\">\n"
@@ -560,8 +561,8 @@ bool XcodeWorkspace::WriteWorkspaceDataFile(const std::string& name,
       << "   </FileRef>\n"
       << "</Workspace>\n";
 
-  return out.WriteToFileIfChanged(build_settings_->GetFullPath(source_file),
-                                  err);
+  return storage.WriteToFileIfChanged(build_settings_->GetFullPath(source_file),
+                                      err);
 }
 
 bool XcodeWorkspace::WriteSettingsFile(const std::string& name,
@@ -573,7 +574,8 @@ bool XcodeWorkspace::WriteSettingsFile(const std::string& name,
   if (source_file.is_null())
     return false;
 
-  StringOutputBuffer out;
+  StringOutputBuffer storage;
+  std::ostream out(&storage);
   out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       << "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" "
       << "\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
@@ -591,8 +593,8 @@ bool XcodeWorkspace::WriteSettingsFile(const std::string& name,
 
   out << "</dict>\n" << "</plist>\n";
 
-  return out.WriteToFileIfChanged(build_settings_->GetFullPath(source_file),
-                                  err);
+  return storage.WriteToFileIfChanged(build_settings_->GetFullPath(source_file),
+                                      err);
 }
 
 // Class responsible for constructing and writing the .xcodeproj from the
@@ -658,7 +660,7 @@ class XcodeProject {
   std::string GetConfigOutputDir(std::string_view output_dir);
 
   // Generates the content of the .xcodeproj file into |out|.
-  void WriteFileContent(OutputStream& out) const;
+  void WriteFileContent(std::ostream& out) const;
 
   // Returns whether the file should be added to the project.
   bool ShouldIncludeFileInProject(const SourceFile& source) const;
@@ -914,11 +916,12 @@ bool XcodeProject::WriteFile(Err* err) const {
   if (pbxproj_file.is_null())
     return false;
 
-  StringOutputBuffer pbxproj_out;
-  WriteFileContent(pbxproj_out);
+  StringOutputBuffer storage;
+  std::ostream pbxproj_string_out(&storage);
+  WriteFileContent(pbxproj_string_out);
 
-  if (!pbxproj_out.WriteToFileIfChanged(
-          build_settings_->GetFullPath(pbxproj_file), err)) {
+  if (!storage.WriteToFileIfChanged(build_settings_->GetFullPath(pbxproj_file),
+                                    err)) {
     return false;
   }
 
@@ -1059,7 +1062,7 @@ std::string XcodeProject::GetConfigOutputDir(std::string_view output_dir) {
                     build_settings_->root_path_utf8());
 }
 
-void XcodeProject::WriteFileContent(OutputStream& out) const {
+void XcodeProject::WriteFileContent(std::ostream& out) const {
   out << "// !$*UTF8*$!\n"
       << "{\n"
       << "\tarchiveVersion = 1;\n"

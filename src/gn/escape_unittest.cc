@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "gn/escape.h"
-#include "gn/output_stream.h"
+#include "gn/string_output_buffer.h"
 #include "util/test/test.h"
 
 TEST(Escape, Ninja) {
@@ -85,17 +85,20 @@ TEST(EscapeJSONString, NinjaPreformatted) {
   opts.mode = ESCAPE_NINJA_PREFORMATTED_COMMAND;
   opts.inhibit_quoting = true;
 
-  StringOutputStream buffer;
+  StringOutputBuffer buffer;
+  std::ostream out(&buffer);
 
-  EscapeJSONStringToStream(buffer, "foo\\\" bar", opts);
+  EscapeJSONStringToStream(out, "foo\\\" bar", opts);
   EXPECT_EQ("foo\\\\\\\" bar", buffer.str());
 
-  StringOutputStream buffer1;
-  EscapeJSONStringToStream(buffer1, "foo bar\\\\", opts);
+  StringOutputBuffer buffer1;
+  std::ostream out1(&buffer1);
+  EscapeJSONStringToStream(out1, "foo bar\\\\", opts);
   EXPECT_EQ("foo bar\\\\\\\\", buffer1.str());
 
-  StringOutputStream buffer2;
-  EscapeJSONStringToStream(buffer2, "a: \"$\\b", opts);
+  StringOutputBuffer buffer2;
+  std::ostream out2(&buffer2);
+  EscapeJSONStringToStream(out2, "a: \"$\\b", opts);
   EXPECT_EQ("a: \\\"$$\\\\b", buffer2.str());
 }
 

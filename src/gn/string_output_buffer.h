@@ -7,18 +7,16 @@
 
 #include <array>
 #include <memory>
+#include <streambuf>
 #include <string>
 #include <string_view>
 #include <vector>
-
-#include "gn/output_stream.h"
 
 namespace base {
 class FilePath;
 }  // namespace base
 
 class Err;
-class OutputStream;
 
 // An append-only very large storage area for string data. Useful for the parts
 // of GN that need to generate huge output files (e.g. --ide=json will create
@@ -30,11 +28,11 @@ class OutputStream;
 //
 //   2) Use operator<<, or Append() to append data to the instance.
 //
-//   3) Alternatively, create an OutputStream that takes its address as
+//   3) Alternatively, create an std::ostream that takes its address as
 //      argument, then use the output stream as usual to append data to it.
 //
 //      StringOutputBuffer storage;
-//      OutputStream out(&storage);
+//      std::ostream out(&storage);
 //      out << "Hello world!";
 //
 //   4) Use ContentsEqual() to compare the instance's content with that of a
@@ -42,7 +40,7 @@ class OutputStream;
 //
 //   5) Use WriteToFile() to write the content to a given file.
 //
-class StringOutputBuffer : public OutputStream {
+class StringOutputBuffer : public std::streambuf {
  public:
   StringOutputBuffer() = default;
 
@@ -74,9 +72,18 @@ class StringOutputBuffer : public OutputStream {
 
   static size_t GetPageSizeForTesting() { return kPageSize; }
 
-  // OutputStream overrides
-  void put(char ch) override { Append(ch); }
-  void write(const char* str, size_t len) override { Append(str, len); }
+ protected:
+  // Called by std::ostream to write |n| chars from |s|.
+  std::streamsize xsputn(const char* s, std::streamsize n) override {
+    Append(s, static_cast<size_t>(n));
+    return n;
+  }
+
+  // Called by std::ostream to write a single character.
+  int_type overflow(int_type ch) override {
+    Append(static_cast<char>(ch));
+    return 1;
+  }
 
  private:
   // Return the number of free bytes in the current page.

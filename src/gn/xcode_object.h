@@ -45,7 +45,6 @@ const char* ToString(PBXObjectClass cls);
 
 // Forward-declarations -------------------------------------------------------
 
-class OutputStream;
 class PBXAggregateTarget;
 class PBXBuildFile;
 class PBXBuildPhase;
@@ -109,7 +108,7 @@ class PBXObject {
   virtual std::string Comment() const;
   virtual void Visit(PBXObjectVisitor& visitor);
   virtual void Visit(PBXObjectVisitorConst& visitor) const;
-  virtual void Print(OutputStream& out, unsigned indent) const = 0;
+  virtual void Print(std::ostream& out, unsigned indent) const = 0;
 
  private:
   std::string id_;
@@ -181,7 +180,7 @@ class PBXAggregateTarget : public PBXTarget {
 
   // PBXObject implementation.
   PBXObjectClass Class() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   PBXAggregateTarget(const PBXAggregateTarget&) = delete;
@@ -199,7 +198,7 @@ class PBXBuildFile : public PBXObject {
   // PBXObject implementation.
   PBXObjectClass Class() const override;
   std::string Name() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   const PBXFileReference* file_reference_ = nullptr;
@@ -218,7 +217,7 @@ class PBXContainerItemProxy : public PBXObject {
   // PBXObject implementation.
   PBXObjectClass Class() const override;
   std::string Name() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   const PBXProject* project_ = nullptr;
@@ -241,7 +240,7 @@ class PBXFileReference : public PBXObject {
   PBXObjectClass Class() const override;
   std::string Name() const override;
   std::string Comment() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
   const std::string& path() const { return path_; }
 
@@ -264,7 +263,7 @@ class PBXFrameworksBuildPhase : public PBXBuildPhase {
   // PBXObject implementation.
   PBXObjectClass Class() const override;
   std::string Name() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   PBXFrameworksBuildPhase(const PBXFrameworksBuildPhase&) = delete;
@@ -296,7 +295,7 @@ class PBXGroup : public PBXObject {
   std::string Name() const override;
   void Visit(PBXObjectVisitor& visitor) override;
   void Visit(PBXObjectVisitorConst& visitor) const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
   // Returns whether the current PBXGroup should sort last when sorting
   // children of a PBXGroup. This should only be used for the "Products"
@@ -354,7 +353,7 @@ class PBXNativeTarget : public PBXTarget {
 
   // PBXObject implementation.
   PBXObjectClass Class() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   const PBXFileReference* product_reference_ = nullptr;
@@ -403,7 +402,7 @@ class PBXProject : public PBXObject {
   std::string Comment() const override;
   void Visit(PBXObjectVisitor& visitor) override;
   void Visit(PBXObjectVisitorConst& visitor) const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   PBXAttributes attributes_;
@@ -432,7 +431,7 @@ class PBXResourcesBuildPhase : public PBXBuildPhase {
   // PBXObject implementation.
   PBXObjectClass Class() const override;
   std::string Name() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   PBXResourcesBuildPhase(const PBXResourcesBuildPhase&) = delete;
@@ -450,7 +449,7 @@ class PBXShellScriptBuildPhase : public PBXBuildPhase {
   // PBXObject implementation.
   PBXObjectClass Class() const override;
   std::string Name() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   std::string name_;
@@ -470,7 +469,7 @@ class PBXSourcesBuildPhase : public PBXBuildPhase {
   // PBXObject implementation.
   PBXObjectClass Class() const override;
   std::string Name() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   PBXSourcesBuildPhase(const PBXSourcesBuildPhase&) = delete;
@@ -490,7 +489,7 @@ class PBXTargetDependency : public PBXObject {
   std::string Name() const override;
   void Visit(PBXObjectVisitor& visitor) override;
   void Visit(PBXObjectVisitorConst& visitor) const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   const PBXTarget* target_ = nullptr;
@@ -511,7 +510,7 @@ class XCBuildConfiguration : public PBXObject {
   // PBXObject implementation.
   PBXObjectClass Class() const override;
   std::string Name() const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   PBXAttributes attributes_;
@@ -535,7 +534,7 @@ class XCConfigurationList : public PBXObject {
   std::string Name() const override;
   void Visit(PBXObjectVisitor& visitor) override;
   void Visit(PBXObjectVisitorConst& visitor) const override;
-  void Print(OutputStream& out, unsigned indent) const override;
+  void Print(std::ostream& out, unsigned indent) const override;
 
  private:
   std::vector<std::unique_ptr<XCBuildConfiguration>> configurations_;

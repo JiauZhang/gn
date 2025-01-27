@@ -7,12 +7,10 @@
 
 #include "gn/ninja_target_writer.h"
 
-class OutputStream;
-
 // Writes a .ninja file for a copy target type.
 class NinjaCopyTargetWriter : public NinjaTargetWriter {
  public:
-  NinjaCopyTargetWriter(const Target* target, OutputStream& out);
+  NinjaCopyTargetWriter(const Target* target, std::ostream& out);
   ~NinjaCopyTargetWriter() override;
 
   void Run() override;

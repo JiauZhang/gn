@@ -19,12 +19,12 @@ XmlAttributes& XmlAttributes::add(std::string_view attr_key,
   return *this;
 }
 
-XmlElementWriter::XmlElementWriter(OutputStream& out,
+XmlElementWriter::XmlElementWriter(std::ostream& out,
                                    const std::string& tag,
                                    const XmlAttributes& attributes)
     : XmlElementWriter(out, tag, attributes, 0) {}
 
-XmlElementWriter::XmlElementWriter(OutputStream& out,
+XmlElementWriter::XmlElementWriter(std::ostream& out,
                                    const std::string& tag,
                                    const XmlAttributes& attributes,
                                    int indent)
@@ -42,11 +42,11 @@ XmlElementWriter::~XmlElementWriter() {
   if (!opening_tag_finished_) {
     // The XML spec does not require a space before the closing slash. However,
     // Eclipse is unable to parse XML settings files if there is no space.
-    out_ << " />\n";
+    out_ << " />" << std::endl;
   } else {
     if (!one_line_)
       out_ << std::string(indent_, ' ');
-    out_ << "</" << tag_ << ">\n";
+    out_ << "</" << tag_ << '>' << std::endl;
   }
 }
 
@@ -67,13 +67,13 @@ std::unique_ptr<XmlElementWriter> XmlElementWriter::SubElement(
   return std::make_unique<XmlElementWriter>(out_, tag, attributes, indent_ + 2);
 }
 
-OutputStream& XmlElementWriter::StartContent(bool start_new_line) {
+std::ostream& XmlElementWriter::StartContent(bool start_new_line) {
   if (!opening_tag_finished_) {
     out_ << '>';
     opening_tag_finished_ = true;
 
     if (start_new_line && one_line_) {
-      out_ << "\n";
+      out_ << std::endl;
       one_line_ = false;
     }
   }

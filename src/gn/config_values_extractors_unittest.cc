@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gn/config_values_extractors.h"
+#include <sstream>
 
 #include "gn/config.h"
-#include "gn/output_stream.h"
+#include "gn/config_values_extractors.h"
 #include "gn/target.h"
 #include "gn/test_with_scope.h"
 #include "util/test/test.h"
@@ -13,13 +13,13 @@
 namespace {
 
 struct FlagWriter {
-  void operator()(const std::string& dir, OutputStream& out) const {
+  void operator()(const std::string& dir, std::ostream& out) const {
     out << dir << " ";
   }
 };
 
 struct IncludeWriter {
-  void operator()(const SourceDir& dir, OutputStream& out) const {
+  void operator()(const SourceDir& dir, std::ostream& out) const {
     out << dir.value() << " ";
   }
 };
@@ -128,7 +128,7 @@ TEST(ConfigValuesExtractors, IncludeOrdering) {
   ASSERT_TRUE(target.OnResolved(&err));
 
   // Verify cflags by serializing.
-  StringOutputStream flag_out;
+  std::ostringstream flag_out;
   FlagWriter flag_writer;
   RecursiveTargetConfigToStream<std::string, FlagWriter>(
       kRecursiveWriterKeepDuplicates, &target, &ConfigValues::cflags,
@@ -138,7 +138,7 @@ TEST(ConfigValuesExtractors, IncludeOrdering) {
             "--dep1-all --dep1-all-sub --dep2-all --dep2-all --dep1-direct ");
 
   // Verify include dirs by serializing.
-  StringOutputStream include_out;
+  std::ostringstream include_out;
   IncludeWriter include_writer;
   RecursiveTargetConfigToStream<SourceDir, IncludeWriter>(
       kRecursiveWriterSkipDuplicates, &target, &ConfigValues::include_dirs,

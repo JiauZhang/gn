@@ -113,18 +113,18 @@ class VisualStudioWriter {
                          const std::string& ninja_extra_args,
                          const std::string& ninja_executable,
                          Err* err);
-  bool WriteProjectFileContents(OutputStream& out,
+  bool WriteProjectFileContents(std::ostream& out,
                                 const SolutionProject& solution_project,
                                 const Target* target,
                                 const std::string& ninja_extra_args,
                                 const std::string& ninja_executable,
                                 SourceFileCompileTypePairs* source_types,
                                 Err* err);
-  void WriteFiltersFileContents(OutputStream& out,
+  void WriteFiltersFileContents(std::ostream& out,
                                 const Target* target,
                                 const SourceFileCompileTypePairs& source_types);
   bool WriteSolutionFile(const std::string& sln_name, Err* err);
-  void WriteSolutionFileContents(OutputStream& out,
+  void WriteSolutionFileContents(std::ostream& out,
                                  const base::FilePath& solution_dir_path);
 
   // Resolves all solution folders (parent folders for projects) into |folders_|

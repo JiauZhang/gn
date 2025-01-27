@@ -4,6 +4,8 @@
 
 #include "gn/ninja_toolchain_writer.h"
 
+#include <fstream>
+
 #include "base/files/file_util.h"
 #include "base/strings/stringize_macros.h"
 #include "gn/build_settings.h"
@@ -12,7 +14,6 @@
 #include "gn/filesystem_utils.h"
 #include "gn/general_tool.h"
 #include "gn/ninja_utils.h"
-#include "gn/output_stream.h"
 #include "gn/pool.h"
 #include "gn/settings.h"
 #include "gn/substitution_writer.h"
@@ -28,7 +29,7 @@ const char kIndent[] = "  ";
 
 NinjaToolchainWriter::NinjaToolchainWriter(const Settings* settings,
                                            const Toolchain* toolchain,
-                                           OutputStream& out)
+                                           std::ostream& out)
     : settings_(settings),
       toolchain_(toolchain),
       out_(out),
@@ -49,7 +50,7 @@ void NinjaToolchainWriter::Run(
     }
     WriteToolRule(tool.second.get(), rule_prefix);
   }
-  out_ << "\n";
+  out_ << std::endl;
 
   for (const auto& pair : rules)
     out_ << pair.second;
@@ -67,7 +68,9 @@ bool NinjaToolchainWriter::RunAndWriteFile(
 
   base::CreateDirectory(ninja_file.DirName());
 
-  FileOutputStream file(FilePathToUTF8(ninja_file).c_str());
+  std::ofstream file;
+  file.open(FilePathToUTF8(ninja_file).c_str(),
+            std::ios_base::out | std::ios_base::binary);
   if (file.fail())
     return false;
 
@@ -78,7 +81,7 @@ bool NinjaToolchainWriter::RunAndWriteFile(
 
 void NinjaToolchainWriter::WriteToolRule(Tool* tool,
                                          const std::string& rule_prefix) {
-  out_ << "rule " << rule_prefix << tool->name() << "\n";
+  out_ << "rule " << rule_prefix << tool->name() << std::endl;
 
   // Rules explicitly include shell commands, so don't try to escape.
   EscapeOptions options;
@@ -96,26 +99,26 @@ void NinjaToolchainWriter::WriteToolRule(Tool* tool,
       // GCC-style deps require a depfile.
       if (!c_tool->depfile().empty()) {
         WriteRulePattern("depfile", tool->depfile(), options);
-        out_ << kIndent << "deps = gcc\n";
+        out_ << kIndent << "deps = gcc" << std::endl;
       }
     } else if (c_tool->depsformat() == CTool::DEPS_MSVC) {
       // MSVC deps don't have a depfile.
-      out_ << kIndent << "deps = msvc\n";
+      out_ << kIndent << "deps = msvc" << std::endl;
     }
   } else if (!tool->depfile().empty()) {
     WriteRulePattern("depfile", tool->depfile(), options);
-    out_ << kIndent << "deps = gcc\n";
+    out_ << kIndent << "deps = gcc" << std::endl;
   }
 
   // Use pool is specified.
   if (tool->pool().ptr) {
     std::string pool_name =
         tool->pool().ptr->GetNinjaName(settings_->default_toolchain_label());
-    out_ << kIndent << "pool = " << pool_name << "\n";
+    out_ << kIndent << "pool = " << pool_name << std::endl;
   }
 
   if (tool->restat())
-    out_ << kIndent << "restat = 1\n";
+    out_ << kIndent << "restat = 1" << std::endl;
 }
 
 void NinjaToolchainWriter::WriteRulePattern(const char* name,
@@ -125,7 +128,7 @@ void NinjaToolchainWriter::WriteRulePattern(const char* name,
     return;
   out_ << kIndent << name << " = ";
   SubstitutionWriter::WriteWithNinjaVariables(pattern, options, out_);
-  out_ << "\n";
+  out_ << std::endl;
 }
 
 void NinjaToolchainWriter::WriteCommandRulePattern(
@@ -138,5 +141,5 @@ void NinjaToolchainWriter::WriteCommandRulePattern(
   if (!launcher.empty())
     out_ << launcher << " ";
   SubstitutionWriter::WriteWithNinjaVariables(command, options, out_);
-  out_ << "\n";
+  out_ << std::endl;
 }

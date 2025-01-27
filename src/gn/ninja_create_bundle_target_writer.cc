@@ -12,7 +12,6 @@
 #include "gn/general_tool.h"
 #include "gn/ninja_utils.h"
 #include "gn/output_file.h"
-#include "gn/output_stream.h"
 #include "gn/scheduler.h"
 #include "gn/substitution_writer.h"
 #include "gn/target.h"
@@ -69,7 +68,7 @@ bool EnsureAllToolsAvailable(const Target* target) {
 
 NinjaCreateBundleTargetWriter::NinjaCreateBundleTargetWriter(
     const Target* target,
-    OutputStream& out)
+    std::ostream& out)
     : NinjaTargetWriter(target, out) {}
 
 NinjaCreateBundleTargetWriter::~NinjaCreateBundleTargetWriter() = default;
@@ -114,7 +113,7 @@ void NinjaCreateBundleTargetWriter::Run() {
                  target_->bundle_data().GetBundleRootDirOutput(settings_)));
   out_ << ": " << BuiltinTool::kBuiltinToolPhony << " ";
   out_ << target_->dependency_output().value();
-  out_ << "\n";
+  out_ << std::endl;
 }
 
 std::string NinjaCreateBundleTargetWriter::WritePostProcessingRuleDefinition() {
@@ -126,7 +125,7 @@ std::string NinjaCreateBundleTargetWriter::WritePostProcessingRuleDefinition() {
   base::ReplaceChars(custom_rule_name, ":/()", "_", &custom_rule_name);
   custom_rule_name.append("_post_processing_rule");
 
-  out_ << "rule " << custom_rule_name << "\n";
+  out_ << "rule " << custom_rule_name << std::endl;
   out_ << "  command = ";
   path_output_.WriteFile(out_, settings_->build_settings()->python_path());
   out_ << " ";
@@ -140,10 +139,10 @@ std::string NinjaCreateBundleTargetWriter::WritePostProcessingRuleDefinition() {
     out_ << " ";
     SubstitutionWriter::WriteWithNinjaVariables(arg, args_escape_options, out_);
   }
-  out_ << "\n";
-  out_ << "  description = POST PROCESSING " << target_label << "\n";
-  out_ << "  restat = 1\n";
-  out_ << "\n";
+  out_ << std::endl;
+  out_ << "  description = POST PROCESSING " << target_label << std::endl;
+  out_ << "  restat = 1" << std::endl;
+  out_ << std::endl;
 
   return custom_rule_name;
 }
@@ -184,7 +183,7 @@ void NinjaCreateBundleTargetWriter::WriteCopyBundleFileRuleSteps(
       path_output_.WriteFiles(out_, order_only_deps);
     }
 
-    out_ << "\n";
+    out_ << std::endl;
   }
 }
 
@@ -225,7 +224,7 @@ void NinjaCreateBundleTargetWriter::WriteCompileAssetsCatalogStep(
       out_ << " ||";
       path_output_.WriteFiles(out_, order_only_deps);
     }
-    out_ << "\n";
+    out_ << std::endl;
     return;
   }
 
@@ -262,14 +261,15 @@ void NinjaCreateBundleTargetWriter::WriteCompileAssetsCatalogStep(
     path_output_.WriteFiles(out_, order_only_deps);
   }
 
-  out_ << "\n";
+  out_ << std::endl;
 
-  out_ << "  product_type = " << target_->bundle_data().product_type() << "\n";
+  out_ << "  product_type = " << target_->bundle_data().product_type()
+       << std::endl;
 
   if (partial_info_plist != OutputFile()) {
     out_ << "  partial_info_plist = ";
     path_output_.WriteFile(out_, partial_info_plist);
-    out_ << "\n";
+    out_ << std::endl;
   }
 
   const std::vector<SubstitutionPattern>& flags =
@@ -283,7 +283,7 @@ void NinjaCreateBundleTargetWriter::WriteCompileAssetsCatalogStep(
       SubstitutionWriter::WriteWithNinjaVariables(flag, args_escape_options,
                                                   out_);
     }
-    out_ << "\n";
+    out_ << std::endl;
   }
 }
 
@@ -325,7 +325,7 @@ NinjaCreateBundleTargetWriter::WriteCompileAssetsCatalogInputDepsStampOrPhony(
       path_output_.WriteFile(out_, target->dependency_output());
     }
   }
-  out_ << "\n";
+  out_ << std::endl;
   return xcassets_input_stamp_or_phony;
 }
 
@@ -355,7 +355,7 @@ void NinjaCreateBundleTargetWriter::WritePostProcessingStep(
   out_ << ": " << post_processing_rule_name;
   out_ << " | ";
   path_output_.WriteFile(out_, post_processing_input_stamp_file);
-  out_ << "\n";
+  out_ << std::endl;
 }
 
 OutputFile
@@ -411,6 +411,6 @@ NinjaCreateBundleTargetWriter::WritePostProcessingInputDepsStampOrPhony(
     out_ << " ||";
     path_output_.WriteFiles(out_, order_only_deps);
   }
-  out_ << "\n";
+  out_ << std::endl;
   return stamp_or_phony;
 }

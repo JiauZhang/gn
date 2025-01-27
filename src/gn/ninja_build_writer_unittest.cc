@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gn/ninja_build_writer.h"
+#include <fstream>
+#include <sstream>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "gn/output_stream.h"
+#include "gn/ninja_build_writer.h"
 #include "gn/pool.h"
 #include "gn/scheduler.h"
 #include "gn/switches.h"
@@ -133,8 +135,8 @@ TEST_F(NinjaBuildWriterTest, TwoTargets) {
 
   std::vector<const Target*> targets = {&target_foo, &target_bar, &target_baz};
 
-  StringOutputStream ninja_out;
-  StringOutputStream depfile_out;
+  std::ostringstream ninja_out;
+  std::ostringstream depfile_out;
 
   NinjaBuildWriter writer(setup.build_settings(), used_toolchains, targets,
                           setup.toolchain(), targets, ninja_out, depfile_out);
@@ -209,8 +211,8 @@ TEST_F(NinjaBuildWriterTest, ExtractRegenerationCommands) {
 
   std::vector<const Target*> targets = {&target_foo};
 
-  StringOutputStream ninja_out;
-  StringOutputStream depfile_out;
+  std::stringstream ninja_out;
+  std::ostringstream depfile_out;
 
   NinjaBuildWriter writer(setup.build_settings(), used_toolchains, targets,
                           setup.toolchain(), targets, ninja_out, depfile_out);
@@ -239,9 +241,8 @@ TEST_F(NinjaBuildWriterTest, ExtractRegenerationCommands) {
   EXPECT_SNIPPET(ninja_out_str, expected_root_target);
   EXPECT_SNIPPET(ninja_out_str, expected_default);
 
-  std::istringstream ninja_in(ninja_out.str());
   std::string commands =
-      NinjaBuildWriter::ExtractRegenerationCommands(ninja_in);
+      NinjaBuildWriter::ExtractRegenerationCommands(ninja_out);
   EXPECT_SNIPPET(commands, expected_rule_gn);
   EXPECT_SNIPPET(commands, expected_build_ninja_stamp);
   EXPECT_SNIPPET(commands, expected_build_ninja);
@@ -254,17 +255,18 @@ TEST_F(NinjaBuildWriterTest, ExtractRegenerationCommands) {
 }
 
 TEST_F(NinjaBuildWriterTest, ExtractRegenerationCommands_DefaultStream) {
-  std::istringstream ninja_in;
+  std::ifstream ninja_in;
   EXPECT_EQ(NinjaBuildWriter::ExtractRegenerationCommands(ninja_in), "");
 }
 
 TEST_F(NinjaBuildWriterTest, ExtractRegenerationCommands_StreamError) {
-  std::istringstream ninja_in("/does/not/exist");
+  std::ifstream ninja_in("/does/not/exist");
   EXPECT_EQ(NinjaBuildWriter::ExtractRegenerationCommands(ninja_in), "");
 }
 
 TEST_F(NinjaBuildWriterTest, ExtractRegenerationCommands_IncompleteNinja) {
-  std::istringstream ninja_in("foo\nbar\nbaz\nbif\n");
+  std::stringstream ninja_in;
+  ninja_in << "foo\nbar\nbaz\nbif\n";
   EXPECT_EQ(NinjaBuildWriter::ExtractRegenerationCommands(ninja_in), "");
 }
 
@@ -285,8 +287,8 @@ TEST_F(NinjaBuildWriterTest, SpaceInDepfile) {
   std::unordered_map<const Settings*, const Toolchain*> used_toolchains;
   used_toolchains[setup.settings()] = setup.toolchain();
   std::vector<const Target*> targets;
-  StringOutputStream ninja_out;
-  StringOutputStream depfile_out;
+  std::ostringstream ninja_out;
+  std::ostringstream depfile_out;
   NinjaBuildWriter writer(setup.build_settings(), used_toolchains, targets,
                           setup.toolchain(), targets, ninja_out, depfile_out);
   ASSERT_TRUE(writer.Run(&err));
@@ -318,8 +320,8 @@ TEST_F(NinjaBuildWriterTest, DuplicateOutputs) {
   std::unordered_map<const Settings*, const Toolchain*> used_toolchains;
   used_toolchains[setup.settings()] = setup.toolchain();
   std::vector<const Target*> targets = {&target_foo, &target_bar};
-  StringOutputStream ninja_out;
-  StringOutputStream depfile_out;
+  std::ostringstream ninja_out;
+  std::ostringstream depfile_out;
   NinjaBuildWriter writer(setup.build_settings(), used_toolchains, targets,
                           setup.toolchain(), targets, ninja_out, depfile_out);
   ASSERT_FALSE(writer.Run(&err));

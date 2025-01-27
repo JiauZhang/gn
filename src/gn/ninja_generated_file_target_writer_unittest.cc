@@ -4,7 +4,6 @@
 
 #include "gn/ninja_generated_file_target_writer.h"
 
-#include "gn/output_stream.h"
 #include "gn/source_file.h"
 #include "gn/target.h"
 #include "gn/test_with_scheduler.h"
@@ -59,7 +58,7 @@ TEST_F(NinjaGeneratedFileTargetWriterTest, Run) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err)) << err.message();
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaGeneratedFileTargetWriter writer(&target, out);
   writer.Run();
 

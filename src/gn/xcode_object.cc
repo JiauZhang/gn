@@ -4,15 +4,15 @@
 
 #include "gn/xcode_object.h"
 
-#include <cstring>
+#include <iomanip>
 #include <iterator>
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "gn/filesystem_utils.h"
-#include "gn/output_stream.h"
 
 // Helper methods -------------------------------------------------------------
 
@@ -51,7 +51,7 @@ std::string EncodeString(const std::string& string) {
   if (!StringNeedEscaping(string))
     return string;
 
-  StringOutputStream buffer;
+  std::stringstream buffer;
   buffer << '"';
   for (char c : string) {
     if (c <= 31) {
@@ -75,12 +75,10 @@ std::string EncodeString(const std::string& string) {
         case '\f':
           buffer << "\\f";
           break;
-        default: {
-          char buff[10];
-          ::snprintf(buff, sizeof(buff), "\\U%04x", static_cast<unsigned>(c));
-          buffer << buff;
+        default:
+          buffer << std::hex << std::setw(4) << std::left << "\\U"
+                 << static_cast<unsigned>(c);
           break;
-        }
       }
     } else {
       if (c == '"' || c == '\\')
@@ -173,37 +171,37 @@ struct NoReference {
   explicit NoReference(const PBXObject* value) : value(value) {}
 };
 
-void PrintValue(OutputStream& out, IndentRules rules, unsigned value) {
+void PrintValue(std::ostream& out, IndentRules rules, unsigned value) {
   out << value;
 }
 
-void PrintValue(OutputStream& out, IndentRules rules, const char* value) {
+void PrintValue(std::ostream& out, IndentRules rules, const char* value) {
   out << EncodeString(value);
 }
 
-void PrintValue(OutputStream& out,
+void PrintValue(std::ostream& out,
                 IndentRules rules,
                 const std::string& value) {
   out << EncodeString(value);
 }
 
-void PrintValue(OutputStream& out, IndentRules rules, const NoReference& obj) {
+void PrintValue(std::ostream& out, IndentRules rules, const NoReference& obj) {
   out << obj.value->id();
 }
 
-void PrintValue(OutputStream& out, IndentRules rules, const PBXObject* value) {
+void PrintValue(std::ostream& out, IndentRules rules, const PBXObject* value) {
   out << value->Reference();
 }
 
 template <typename ObjectClass>
-void PrintValue(OutputStream& out,
+void PrintValue(std::ostream& out,
                 IndentRules rules,
                 const std::unique_ptr<ObjectClass>& value) {
   PrintValue(out, rules, value.get());
 }
 
 template <typename ValueType>
-void PrintValue(OutputStream& out,
+void PrintValue(std::ostream& out,
                 IndentRules rules,
                 const std::vector<ValueType>& values) {
   IndentRules sub_rule{rules.one_line, rules.level + 1};
@@ -222,7 +220,7 @@ void PrintValue(OutputStream& out,
 }
 
 template <typename ValueType>
-void PrintValue(OutputStream& out,
+void PrintValue(std::ostream& out,
                 IndentRules rules,
                 const std::map<std::string, ValueType>& values) {
   IndentRules sub_rule{rules.one_line, rules.level + 1};
@@ -242,7 +240,7 @@ void PrintValue(OutputStream& out,
 }
 
 template <typename ValueType>
-void PrintProperty(OutputStream& out,
+void PrintProperty(std::ostream& out,
                    IndentRules rules,
                    const char* name,
                    ValueType&& value) {
@@ -445,7 +443,7 @@ PBXObjectClass PBXAggregateTarget::Class() const {
   return PBXAggregateTargetClass;
 }
 
-void PBXAggregateTarget::Print(OutputStream& out, unsigned indent) const {
+void PBXAggregateTarget::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -477,7 +475,7 @@ std::string PBXBuildFile::Name() const {
   return file_reference_->Name() + " in " + build_phase_->Name();
 }
 
-void PBXBuildFile::Print(OutputStream& out, unsigned indent) const {
+void PBXBuildFile::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {true, 0};
   out << indent_str << Reference() << " = {";
@@ -501,7 +499,7 @@ std::string PBXContainerItemProxy::Name() const {
   return "PBXContainerItemProxy";
 }
 
-void PBXContainerItemProxy::Print(OutputStream& out, unsigned indent) const {
+void PBXContainerItemProxy::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -534,7 +532,7 @@ std::string PBXFileReference::Comment() const {
   return !name_.empty() ? name_ : path_;
 }
 
-void PBXFileReference::Print(OutputStream& out, unsigned indent) const {
+void PBXFileReference::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {true, 0};
   out << indent_str << Reference() << " = {";
@@ -574,7 +572,7 @@ std::string PBXFrameworksBuildPhase::Name() const {
   return "Frameworks";
 }
 
-void PBXFrameworksBuildPhase::Print(OutputStream& out, unsigned indent) const {
+void PBXFrameworksBuildPhase::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -665,7 +663,7 @@ void PBXGroup::Visit(PBXObjectVisitorConst& visitor) const {
   }
 }
 
-void PBXGroup::Print(OutputStream& out, unsigned indent) const {
+void PBXGroup::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -757,7 +755,7 @@ PBXObjectClass PBXNativeTarget::Class() const {
   return PBXNativeTargetClass;
 }
 
-void PBXNativeTarget::Print(OutputStream& out, unsigned indent) const {
+void PBXNativeTarget::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -926,7 +924,7 @@ void PBXProject::Visit(PBXObjectVisitorConst& visitor) const {
     target->Visit(visitor);
   }
 }
-void PBXProject::Print(OutputStream& out, unsigned indent) const {
+void PBXProject::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -960,7 +958,7 @@ std::string PBXResourcesBuildPhase::Name() const {
   return "Resources";
 }
 
-void PBXResourcesBuildPhase::Print(OutputStream& out, unsigned indent) const {
+void PBXResourcesBuildPhase::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -989,7 +987,7 @@ std::string PBXShellScriptBuildPhase::Name() const {
   return name_;
 }
 
-void PBXShellScriptBuildPhase::Print(OutputStream& out, unsigned indent) const {
+void PBXShellScriptBuildPhase::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -1021,7 +1019,7 @@ std::string PBXSourcesBuildPhase::Name() const {
   return "Sources";
 }
 
-void PBXSourcesBuildPhase::Print(OutputStream& out, unsigned indent) const {
+void PBXSourcesBuildPhase::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -1057,7 +1055,7 @@ void PBXTargetDependency::Visit(PBXObjectVisitorConst& visitor) const {
   container_item_proxy_->Visit(visitor);
 }
 
-void PBXTargetDependency::Print(OutputStream& out, unsigned indent) const {
+void PBXTargetDependency::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -1083,7 +1081,7 @@ std::string XCBuildConfiguration::Name() const {
   return name_;
 }
 
-void XCBuildConfiguration::Print(OutputStream& out, unsigned indent) const {
+void XCBuildConfiguration::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";
@@ -1135,7 +1133,7 @@ void XCConfigurationList::Visit(PBXObjectVisitorConst& visitor) const {
   }
 }
 
-void XCConfigurationList::Print(OutputStream& out, unsigned indent) const {
+void XCConfigurationList::Print(std::ostream& out, unsigned indent) const {
   const std::string indent_str(indent, '\t');
   const IndentRules rules = {false, indent + 1};
   out << indent_str << Reference() << " = {\n";

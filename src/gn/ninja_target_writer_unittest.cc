@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gn/ninja_target_writer.h"
+#include <sstream>
+
 #include "gn/ninja_action_target_writer.h"
-#include "gn/output_stream.h"
+#include "gn/ninja_target_writer.h"
 #include "gn/target.h"
 #include "gn/test_with_scope.h"
 #include "util/test/test.h"
@@ -15,7 +16,7 @@ class TestingNinjaTargetWriter : public NinjaTargetWriter {
  public:
   TestingNinjaTargetWriter(const Target* target,
                            const Toolchain* toolchain,
-                           OutputStream& out)
+                           std::ostream& out)
       : NinjaTargetWriter(target, out) {}
 
   void Run() override {}
@@ -43,7 +44,7 @@ TEST(NinjaTargetWriter, ResolvedCreatedOnDemand) {
   base_target.action_values().set_script(SourceFile("//foo/script.py"));
   ASSERT_TRUE(base_target.OnResolved(&err));
 
-  StringOutputStream stream;
+  std::ostringstream stream;
   TestingNinjaTargetWriter writer(&base_target, setup.toolchain(), stream);
 
   const auto* resolved_ptr = &writer.resolved();
@@ -66,7 +67,7 @@ TEST(NinjaTargetWriter, ResolvedSetExplicitly) {
   ASSERT_TRUE(base_target.OnResolved(&err));
 
   ResolvedTargetData resolved;
-  StringOutputStream stream;
+  std::ostringstream stream;
   TestingNinjaTargetWriter writer(&base_target, setup.toolchain(), stream);
   writer.SetResolvedTargetData(&resolved);
 
@@ -110,7 +111,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDep) {
 
   // Input deps for the base (should be only the script itself).
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     TestingNinjaTargetWriter writer(&base_target, setup.toolchain(), stream);
     std::vector<OutputFile> dep = writer.WriteInputDepsStampOrPhonyAndGetDep(
         std::vector<const Target*>(), 10u);
@@ -124,7 +125,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDep) {
 
   // Input deps for the target (should depend on the base).
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     TestingNinjaTargetWriter writer(&target, setup.toolchain(), stream);
     std::vector<OutputFile> dep = writer.WriteInputDepsStampOrPhonyAndGetDep(
         std::vector<const Target*>(), 10u);
@@ -136,7 +137,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDep) {
   }
 
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     NinjaActionTargetWriter writer(&action, stream);
     writer.Run();
     EXPECT_EQ(
@@ -155,7 +156,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDep) {
   // Input deps for action which should depend on the base since its a hard dep
   // that is a (indirect) dependency, as well as the the action source.
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     TestingNinjaTargetWriter writer(&action, setup.toolchain(), stream);
     std::vector<OutputFile> dep = writer.WriteInputDepsStampOrPhonyAndGetDep(
         std::vector<const Target*>(), 10u);
@@ -207,7 +208,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDepUseStampFiles) {
 
   // Input deps for the base (should be only the script itself).
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     TestingNinjaTargetWriter writer(&base_target, setup.toolchain(), stream);
     std::vector<OutputFile> dep = writer.WriteInputDepsStampOrPhonyAndGetDep(
         std::vector<const Target*>(), 10u);
@@ -221,7 +222,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDepUseStampFiles) {
 
   // Input deps for the target (should depend on the base).
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     TestingNinjaTargetWriter writer(&target, setup.toolchain(), stream);
     std::vector<OutputFile> dep = writer.WriteInputDepsStampOrPhonyAndGetDep(
         std::vector<const Target*>(), 10u);
@@ -233,7 +234,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDepUseStampFiles) {
   }
 
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     NinjaActionTargetWriter writer(&action, stream);
     writer.Run();
     EXPECT_EQ(
@@ -252,7 +253,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDepUseStampFiles) {
   // Input deps for action which should depend on the base since its a hard dep
   // that is a (indirect) dependency, as well as the the action source.
   {
-    StringOutputStream stream;
+    std::ostringstream stream;
     TestingNinjaTargetWriter writer(&action, setup.toolchain(), stream);
     std::vector<OutputFile> dep = writer.WriteInputDepsStampOrPhonyAndGetDep(
         std::vector<const Target*>(), 10u);
@@ -288,7 +289,7 @@ TEST(NinjaTargetWriter, WriteInputDepsStampOrPhonyAndGetDepWithToolchainDeps) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  StringOutputStream stream;
+  std::ostringstream stream;
   TestingNinjaTargetWriter writer(&target, setup.toolchain(), stream);
   std::vector<OutputFile> dep = writer.WriteInputDepsStampOrPhonyAndGetDep(
       std::vector<const Target*>(), 10u);

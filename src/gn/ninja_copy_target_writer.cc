@@ -8,7 +8,6 @@
 #include "gn/general_tool.h"
 #include "gn/ninja_utils.h"
 #include "gn/output_file.h"
-#include "gn/output_stream.h"
 #include "gn/scheduler.h"
 #include "gn/string_utils.h"
 #include "gn/substitution_list.h"
@@ -17,7 +16,7 @@
 #include "gn/toolchain.h"
 
 NinjaCopyTargetWriter::NinjaCopyTargetWriter(const Target* target,
-                                             OutputStream& out)
+                                             std::ostream& out)
     : NinjaTargetWriter(target, out) {}
 
 NinjaCopyTargetWriter::~NinjaCopyTargetWriter() = default;
@@ -56,7 +55,7 @@ void NinjaCopyTargetWriter::Run() {
 
   std::vector<OutputFile> output_files;
   WriteCopyRules(&output_files);
-  out_ << "\n";
+  out_ << std::endl;
   WriteStampOrPhonyForTarget(output_files, std::vector<OutputFile>());
 }
 
@@ -125,6 +124,6 @@ void NinjaCopyTargetWriter::WriteCopyRules(
       path_output_.WriteFiles(out_, input_deps);
       path_output_.WriteFiles(out_, data_outs);
     }
-    out_ << "\n";
+    out_ << std::endl;
   }
 }

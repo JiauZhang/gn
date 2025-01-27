@@ -7,7 +7,6 @@
 
 #include "gn/config.h"
 #include "gn/header_checker.h"
-#include "gn/output_stream.h"
 #include "gn/scheduler.h"
 #include "gn/target.h"
 #include "gn/test_with_scheduler.h"
@@ -76,7 +75,7 @@ class HeaderCheckerTest : public TestWithScheduler {
 
 }  // namespace
 
-void PrintTo(const SourceFile& source_file, OutputStream* os) {
+void PrintTo(const SourceFile& source_file, ::std::ostream* os) {
   *os << source_file.value();
 }
 

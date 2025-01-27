@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gn/path_output.h"
+#include <sstream>
+
 #include "base/files/file_path.h"
 #include "gn/output_file.h"
-#include "gn/output_stream.h"
+#include "gn/path_output.h"
 #include "gn/source_dir.h"
 #include "gn/source_file.h"
 #include "util/build_config.h"
@@ -17,19 +18,19 @@ TEST(PathOutput, Basic) {
   PathOutput writer(build_dir, source_root, ESCAPE_NONE);
   {
     // Normal source-root path.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/bar.cc"));
     EXPECT_EQ("../../foo/bar.cc", out.str());
   }
   {
     // File in the root dir.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo.cc"));
     EXPECT_EQ("../../foo.cc", out.str());
   }
   {
     // Files in the output dir.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//out/Debug/foo.cc"));
     out << " ";
     writer.WriteFile(out, SourceFile("//out/Debug/bar/baz.cc"));
@@ -38,14 +39,14 @@ TEST(PathOutput, Basic) {
 #if defined(OS_WIN)
   {
     // System-absolute path.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("/C:/foo/bar.cc"));
     EXPECT_EQ("C:/foo/bar.cc", out.str());
   }
 #else
   {
     // System-absolute path.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("/foo/bar.cc"));
     EXPECT_EQ("/foo/bar.cc", out.str());
   }
@@ -59,13 +60,13 @@ TEST(PathOutput, BasicInRoot) {
   PathOutput writer(build_dir, source_root, ESCAPE_NONE);
   {
     // Normal source-root path.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/bar.cc"));
     EXPECT_EQ("foo/bar.cc", out.str());
   }
   {
     // File in the root dir.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo.cc"));
     EXPECT_EQ("foo.cc", out.str());
   }
@@ -77,13 +78,13 @@ TEST(PathOutput, NinjaEscaping) {
   PathOutput writer(build_dir, source_root, ESCAPE_NINJA);
   {
     // Spaces and $ in filenames.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/foo bar$.cc"));
     EXPECT_EQ("../../foo/foo$ bar$$.cc", out.str());
   }
   {
     // Not other weird stuff
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/\"foo\".cc"));
     EXPECT_EQ("../../foo/\"foo\".cc", out.str());
   }
@@ -97,7 +98,7 @@ TEST(PathOutput, NinjaForkEscaping) {
   // Spaces in filenames should get quoted on Windows.
   writer.set_escape_platform(ESCAPE_PLATFORM_WIN);
   {
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/foo bar.cc"));
     EXPECT_EQ("\"../../foo/foo$ bar.cc\"", out.str());
   }
@@ -105,7 +106,7 @@ TEST(PathOutput, NinjaForkEscaping) {
   // Spaces in filenames should get escaped on Posix.
   writer.set_escape_platform(ESCAPE_PLATFORM_POSIX);
   {
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/foo bar.cc"));
     EXPECT_EQ("../../foo/foo\\$ bar.cc", out.str());
   }
@@ -113,7 +114,7 @@ TEST(PathOutput, NinjaForkEscaping) {
   // Quotes should get blackslash-escaped on Windows and Posix.
   writer.set_escape_platform(ESCAPE_PLATFORM_WIN);
   {
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/\"foobar\".cc"));
     // Our Windows code currently quotes the whole thing in this case for
     // code simplicity, even though it's strictly unnecessary. This might
@@ -122,7 +123,7 @@ TEST(PathOutput, NinjaForkEscaping) {
   }
   writer.set_escape_platform(ESCAPE_PLATFORM_POSIX);
   {
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/\"foobar\".cc"));
     EXPECT_EQ("../../foo/\\\"foobar\\\".cc", out.str());
   }
@@ -130,13 +131,13 @@ TEST(PathOutput, NinjaForkEscaping) {
   // Backslashes should get escaped on non-Windows and preserved on Windows.
   writer.set_escape_platform(ESCAPE_PLATFORM_WIN);
   {
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, OutputFile("foo\\bar.cc"));
     EXPECT_EQ("foo\\bar.cc", out.str());
   }
   writer.set_escape_platform(ESCAPE_PLATFORM_POSIX);
   {
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, OutputFile("foo\\bar.cc"));
     EXPECT_EQ("foo\\\\bar.cc", out.str());
   }
@@ -151,7 +152,7 @@ TEST(PathOutput, InhibitQuoting) {
   writer.set_escape_platform(ESCAPE_PLATFORM_WIN);
   {
     // We should get unescaped spaces in the output with no quotes.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/foo bar.cc"));
     EXPECT_EQ("../../foo/foo$ bar.cc", out.str());
   }
@@ -159,7 +160,7 @@ TEST(PathOutput, InhibitQuoting) {
   writer.set_escape_platform(ESCAPE_PLATFORM_POSIX);
   {
     // Escapes the space.
-    StringOutputStream out;
+    std::ostringstream out;
     writer.WriteFile(out, SourceFile("//foo/foo bar.cc"));
     EXPECT_EQ("../../foo/foo\\$ bar.cc", out.str());
   }
@@ -171,13 +172,13 @@ TEST(PathOutput, WriteDir) {
     std::string_view source_root("/source/root");
     PathOutput writer(build_dir, source_root, ESCAPE_NINJA);
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//foo/bar/"),
                       PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("../../foo/bar/", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//foo/bar/"),
                       PathOutput::DIR_NO_LAST_SLASH);
       EXPECT_EQ("../../foo/bar", out.str());
@@ -185,54 +186,54 @@ TEST(PathOutput, WriteDir) {
 
     // Output source root dir.
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//"), PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("../../", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//"), PathOutput::DIR_NO_LAST_SLASH);
       EXPECT_EQ("../..", out.str());
     }
 
     // Output system root dir.
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("/"), PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("/", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("/"), PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("/", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("/"), PathOutput::DIR_NO_LAST_SLASH);
       EXPECT_EQ("/.", out.str());
     }
 
     // Output inside current dir.
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//out/Debug/"),
                       PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("./", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//out/Debug/"),
                       PathOutput::DIR_NO_LAST_SLASH);
       EXPECT_EQ(".", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//out/Debug/foo/"),
                       PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("foo/", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, SourceDir("//out/Debug/foo/"),
                       PathOutput::DIR_NO_LAST_SLASH);
       EXPECT_EQ("foo", out.str());
@@ -240,18 +241,18 @@ TEST(PathOutput, WriteDir) {
 
     // WriteDir using an OutputFile.
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, OutputFile("foo/"),
                       PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("foo/", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, OutputFile("foo/"), PathOutput::DIR_NO_LAST_SLASH);
       EXPECT_EQ("foo", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       writer.WriteDir(out, OutputFile(), PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("", out.str());
     }
@@ -261,13 +262,13 @@ TEST(PathOutput, WriteDir) {
     std::string_view source_root("/source/root");
     PathOutput root_writer(SourceDir("//"), source_root, ESCAPE_NINJA);
     {
-      StringOutputStream out;
+      std::ostringstream out;
       root_writer.WriteDir(out, SourceDir("//"),
                            PathOutput::DIR_INCLUDE_LAST_SLASH);
       EXPECT_EQ("./", out.str());
     }
     {
-      StringOutputStream out;
+      std::ostringstream out;
       root_writer.WriteDir(out, SourceDir("//"), PathOutput::DIR_NO_LAST_SLASH);
       EXPECT_EQ(".", out.str());
     }

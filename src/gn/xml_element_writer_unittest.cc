@@ -4,7 +4,8 @@
 
 #include "gn/xml_element_writer.h"
 
-#include "gn/output_stream.h"
+#include <sstream>
+
 #include "util/test/test.h"
 
 namespace {
@@ -12,7 +13,7 @@ namespace {
 class MockValueWriter {
  public:
   explicit MockValueWriter(const std::string& value) : value_(value) {}
-  void operator()(OutputStream& out) const { out << value_; }
+  void operator()(std::ostream& out) const { out << value_; }
 
  private:
   std::string value_;
@@ -21,24 +22,24 @@ class MockValueWriter {
 }  // namespace
 
 TEST(XmlElementWriter, EmptyElement) {
-  StringOutputStream out;
+  std::ostringstream out;
   { XmlElementWriter writer(out, "foo", XmlAttributes()); }
   EXPECT_EQ("<foo />\n", out.str());
 
-  StringOutputStream out_attr;
+  std::ostringstream out_attr;
   {
     XmlElementWriter writer(out_attr, "foo",
                             XmlAttributes("bar", "abc").add("baz", "123"));
   }
   EXPECT_EQ("<foo bar=\"abc\" baz=\"123\" />\n", out_attr.str());
 
-  StringOutputStream out_indent;
+  std::ostringstream out_indent;
   {
     XmlElementWriter writer(out_indent, "foo", XmlAttributes("bar", "baz"), 2);
   }
   EXPECT_EQ("  <foo bar=\"baz\" />\n", out_indent.str());
 
-  StringOutputStream out_writer;
+  std::ostringstream out_writer;
   {
     XmlElementWriter writer(out_writer, "foo", "bar", MockValueWriter("baz"),
                             2);
@@ -47,7 +48,7 @@ TEST(XmlElementWriter, EmptyElement) {
 }
 
 TEST(XmlElementWriter, ElementWithText) {
-  StringOutputStream out;
+  std::ostringstream out;
   {
     XmlElementWriter writer(out, "foo", XmlAttributes("bar", "baz"));
     writer.Text("Hello world!");
@@ -56,7 +57,7 @@ TEST(XmlElementWriter, ElementWithText) {
 }
 
 TEST(XmlElementWriter, SubElements) {
-  StringOutputStream out;
+  std::ostringstream out;
   {
     XmlElementWriter writer(out, "root", XmlAttributes("aaa", "000"));
     writer.SubElement("foo", XmlAttributes());
@@ -76,7 +77,7 @@ TEST(XmlElementWriter, SubElements) {
 }
 
 TEST(XmlElementWriter, StartContent) {
-  StringOutputStream out;
+  std::ostringstream out;
   {
     XmlElementWriter writer(out, "foo", XmlAttributes("bar", "baz"));
     writer.StartContent(false) << "Hello world!";

@@ -17,8 +17,6 @@
 
 struct EscapeOptions;
 
-class OutputStream;
-
 // Provides a way to iterate through all ConfigValues applying to a given
 // target. This is more complicated than normal because the target has a list
 // of configs applying to it, and also config values on the target itself.
@@ -89,7 +87,7 @@ inline void RecursiveTargetConfigToStream(
     const Target* target,
     const std::vector<T>& (ConfigValues::*getter)() const,
     const Writer& writer,
-    OutputStream& out) {
+    std::ostream& out) {
   std::set<T> seen;
   for (ConfigValuesIterator iter(target); !iter.done(); iter.Next()) {
     const std::vector<T>& values = ((iter.cur()).*getter)();
@@ -115,6 +113,6 @@ void RecursiveTargetConfigStringsToStream(
     const Target* target,
     const std::vector<std::string>& (ConfigValues::*getter)() const,
     const EscapeOptions& escape_options,
-    OutputStream& out);
+    std::ostream& out);
 
 #endif  // TOOLS_GN_CONFIG_VALUES_EXTRACTORS_H_

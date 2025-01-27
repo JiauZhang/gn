@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <sstream>
+
 #include "gn/ninja_toolchain_writer.h"
-#include "gn/output_stream.h"
 #include "gn/test_with_scope.h"
 #include "util/test/test.h"
 
 TEST(NinjaToolchainWriter, WriteToolRule) {
   TestWithScope setup;
 
-  StringOutputStream stream;
+  std::ostringstream stream;
   NinjaToolchainWriter writer(setup.settings(), setup.toolchain(), stream);
   writer.WriteToolRule(setup.toolchain()->GetTool(CTool::kCToolCc),
                        std::string("prefix_"));
@@ -25,7 +26,7 @@ TEST(NinjaToolchainWriter, WriteToolRule) {
 TEST(NinjaToolchainWriter, WriteToolRuleWithLauncher) {
   TestWithScope setup;
 
-  StringOutputStream stream;
+  std::ostringstream stream;
   NinjaToolchainWriter writer(setup.settings(), setup.toolchain(), stream);
   writer.WriteToolRule(setup.toolchain()->GetTool(CTool::kCToolCxx),
                        std::string("prefix_"));

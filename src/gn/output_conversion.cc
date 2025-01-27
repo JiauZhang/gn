@@ -4,29 +4,28 @@
 
 #include "gn/output_conversion.h"
 
-#include "gn/output_stream.h"
 #include "gn/settings.h"
 #include "gn/value.h"
 
 namespace {
 
-void ToString(const Value& output, OutputStream& out) {
+void ToString(const Value& output, std::ostream& out) {
   out << output.ToString(false);
 }
 
-void ToStringQuoted(const Value& output, OutputStream& out) {
+void ToStringQuoted(const Value& output, std::ostream& out) {
   out << "\"" << output.ToString(false) << "\"";
 }
 
-void Indent(int indent, OutputStream& out) {
+void Indent(int indent, std::ostream& out) {
   for (int i = 0; i < indent; ++i)
     out << "  ";
 }
 
 // Forward declare so it can be used recursively.
-void RenderScopeToJSON(const Value& output, OutputStream& out, int indent);
+void RenderScopeToJSON(const Value& output, std::ostream& out, int indent);
 
-void RenderListToJSON(const Value& output, OutputStream& out, int indent) {
+void RenderListToJSON(const Value& output, std::ostream& out, int indent) {
   assert(indent > 0);
   bool first = true;
   out << "[\n";
@@ -47,7 +46,7 @@ void RenderListToJSON(const Value& output, OutputStream& out, int indent) {
   out << "]";
 }
 
-void RenderScopeToJSON(const Value& output, OutputStream& out, int indent) {
+void RenderScopeToJSON(const Value& output, std::ostream& out, int indent) {
   assert(indent > 0);
   Scope::KeyValueMap scope_values;
   output.scope_value()->GetCurrentScopeValues(&scope_values);
@@ -71,14 +70,14 @@ void RenderScopeToJSON(const Value& output, OutputStream& out, int indent) {
   out << "}";
 }
 
-void OutputListLines(const Value& output, OutputStream& out) {
+void OutputListLines(const Value& output, std::ostream& out) {
   assert(output.type() == Value::LIST);
   const std::vector<Value>& list = output.list_value();
   for (const auto& cur : list)
     out << cur.ToString(false) << "\n";
 }
 
-void OutputString(const Value& output, OutputStream& out) {
+void OutputString(const Value& output, std::ostream& out) {
   if (output.type() == Value::NONE)
     return;
   if (output.type() == Value::STRING) {
@@ -88,7 +87,7 @@ void OutputString(const Value& output, OutputStream& out) {
   ToStringQuoted(output, out);
 }
 
-void OutputValue(const Value& output, OutputStream& out) {
+void OutputValue(const Value& output, std::ostream& out) {
   if (output.type() == Value::NONE)
     return;
   if (output.type() == Value::STRING) {
@@ -100,7 +99,7 @@ void OutputValue(const Value& output, OutputStream& out) {
 
 // The direct Value::ToString call wraps the scope in '{}', which we don't want
 // here for the top-level scope being output.
-void OutputScope(const Value& output, OutputStream& out) {
+void OutputScope(const Value& output, std::ostream& out) {
   Scope::KeyValueMap scope_values;
   output.scope_value()->GetCurrentScopeValues(&scope_values);
   for (const auto& pair : scope_values) {
@@ -108,14 +107,14 @@ void OutputScope(const Value& output, OutputStream& out) {
   }
 }
 
-void OutputDefault(const Value& output, OutputStream& out) {
+void OutputDefault(const Value& output, std::ostream& out) {
   if (output.type() == Value::LIST)
     OutputListLines(output, out);
   else
     ToString(output, out);
 }
 
-void OutputJSON(const Value& output, OutputStream& out) {
+void OutputJSON(const Value& output, std::ostream& out) {
   if (output.type() == Value::SCOPE) {
     RenderScopeToJSON(output, out, /*indent=*/1);
     return;
@@ -130,7 +129,7 @@ void OutputJSON(const Value& output, OutputStream& out) {
 void DoConvertValueToOutput(const Value& output,
                             const std::string& output_conversion,
                             const Value& original_output_conversion,
-                            OutputStream& out,
+                            std::ostream& out,
                             Err* err) {
   if (output_conversion == "") {
     OutputDefault(output, out);
@@ -164,7 +163,7 @@ void DoConvertValueToOutput(const Value& output,
 void ConvertValueToOutput(const Settings* settings,
                           const Value& output,
                           const Value& output_conversion,
-                          OutputStream& out,
+                          std::ostream& out,
                           Err* err) {
   if (output_conversion.type() == Value::NONE) {
     OutputDefault(output, out);

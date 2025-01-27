@@ -4,8 +4,9 @@
 
 #include "gn/pool.h"
 
+#include <sstream>
+
 #include "base/logging.h"
-#include "gn/output_stream.h"
 
 Pool::~Pool() = default;
 
@@ -24,7 +25,7 @@ std::string Pool::GetNinjaName(const Label& default_toolchain) const {
 }
 
 std::string Pool::GetNinjaName(bool include_toolchain) const {
-  StringOutputStream buffer;
+  std::ostringstream buffer;
   if (include_toolchain) {
     DCHECK(label().toolchain_dir().is_source_absolute());
     std::string toolchain_dir = label().toolchain_dir().value();

@@ -10,8 +10,6 @@
 #include "gn/toolchain.h"
 #include "gn/unique_vector.h"
 
-class OutputStream;
-
 struct EscapeOptions;
 struct ModuleDep;
 
@@ -19,7 +17,7 @@ struct ModuleDep;
 // library, or a static library).
 class NinjaCBinaryTargetWriter : public NinjaBinaryTargetWriter {
  public:
-  NinjaCBinaryTargetWriter(const Target* target, OutputStream& out);
+  NinjaCBinaryTargetWriter(const Target* target, std::ostream& out);
   ~NinjaCBinaryTargetWriter() override;
 
   void Run() override;

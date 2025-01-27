@@ -10,7 +10,7 @@
 // Writes a .ninja file for a bundle_data target type.
 class NinjaBundleDataTargetWriter : public NinjaTargetWriter {
  public:
-  NinjaBundleDataTargetWriter(const Target* target, OutputStream& out);
+  NinjaBundleDataTargetWriter(const Target* target, std::ostream& out);
   ~NinjaBundleDataTargetWriter() override;
 
   void Run() override;

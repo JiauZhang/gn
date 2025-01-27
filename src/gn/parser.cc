@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "gn/functions.h"
 #include "gn/operators.h"
-#include "gn/output_stream.h"
 #include "gn/token.h"
 
 const char kGrammar_Help[] =
@@ -897,21 +896,23 @@ std::string IndentFor(int value) {
   return std::string(value, ' ');
 }
 
-void RenderToText(const base::Value& node, int indent_level, OutputStream& os) {
+void RenderToText(const base::Value& node,
+                  int indent_level,
+                  std::ostringstream& os) {
   const base::Value* child = node.FindKey(std::string("child"));
   std::string node_type(node.FindKey("type")->GetString());
   if (node_type == "ACCESSOR") {
     // AccessorNode is a bit special, in that it holds a Token, not a ParseNode
     // for the base.
-    os << IndentFor(indent_level) << node_type << "\n";
+    os << IndentFor(indent_level) << node_type << std::endl;
     os << IndentFor(indent_level + 1) << node.FindKey("value")->GetString()
-       << "\n";
+       << std::endl;
   } else {
     os << IndentFor(indent_level) << node_type;
     if (node.FindKey("value")) {
       os << "(" << node.FindKey("value")->GetString() << ")";
     }
-    os << "\n";
+    os << std::endl;
   }
   if (node.FindKey(kJsonBeforeComment)) {
     for (auto& v : node.FindKey(kJsonBeforeComment)->GetList()) {

@@ -6,7 +6,6 @@
 
 #include "gn/output_conversion.h"
 #include "gn/output_file.h"
-#include "gn/output_stream.h"
 #include "gn/scheduler.h"
 #include "gn/settings.h"
 #include "gn/string_output_buffer.h"
@@ -16,7 +15,7 @@
 
 NinjaGeneratedFileTargetWriter::NinjaGeneratedFileTargetWriter(
     const Target* target,
-    OutputStream& out)
+    std::ostream& out)
     : NinjaTargetWriter(target, out) {}
 
 NinjaGeneratedFileTargetWriter::~NinjaGeneratedFileTargetWriter() = default;
@@ -90,8 +89,9 @@ void NinjaGeneratedFileTargetWriter::GenerateFile() {
 
   // Compute output.
   StringOutputBuffer storage;
-  ConvertValueToOutput(settings_, contents, target_->output_conversion(),
-                       storage, &err);
+  std::ostream out(&storage);
+  ConvertValueToOutput(settings_, contents, target_->output_conversion(), out,
+                       &err);
 
   if (err.has_error()) {
     g_scheduler->FailWithError(err);

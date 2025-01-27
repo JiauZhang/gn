@@ -10,7 +10,6 @@
 
 class Builder;
 class BuildSettings;
-class OutputStream;
 
 // rust-project.json is an output format describing the rust build graph. It is
 // used by rust-analyzer (a LSP server), similar to compile-commands.json.
@@ -28,7 +27,7 @@ class RustProjectWriter {
                                Err* err);
   static void RenderJSON(const BuildSettings* build_settings,
                          std::vector<const Target*>& all_targets,
-                         OutputStream& rust_project);
+                         std::ostream& rust_project);
 
  private:
   // This function visits the deps graph of a target in a DFS fashion.

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <sstream>
 
 #include "gn/ninja_copy_target_writer.h"
-#include "gn/output_stream.h"
 #include "gn/target.h"
 #include "gn/test_with_scope.h"
 #include "util/test/test.h"
@@ -27,7 +27,7 @@ TEST(NinjaCopyTargetWriter, Run) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaCopyTargetWriter writer(&target, out);
   writer.Run();
 
@@ -56,7 +56,7 @@ TEST(NinjaCopyTargetWriter, ToolchainDeps) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaCopyTargetWriter writer(&target, out);
   writer.Run();
 
@@ -81,7 +81,7 @@ TEST(NinjaCopyTargetWriter, OrderOnlyDeps) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaCopyTargetWriter writer(&target, out);
   writer.Run();
 
@@ -113,7 +113,7 @@ TEST(NinjaCopyTargetWriter, DataDeps) {
   target.SetToolchain(setup.toolchain());
   ASSERT_TRUE(target.OnResolved(&err));
 
-  StringOutputStream out;
+  std::ostringstream out;
   NinjaCopyTargetWriter writer(&target, out);
   writer.Run();
 

@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
-#include "gn/output_stream.h"
 #include "util/build_config.h"
 
 namespace {
@@ -295,14 +294,14 @@ std::string EscapeString(std::string_view str,
                      EscapeStringToString(str, options, dest, needed_quoting));
 }
 
-void EscapeStringToStream(OutputStream& out,
+void EscapeStringToStream(std::ostream& out,
                           std::string_view str,
                           const EscapeOptions& options) {
   StackOrHeapBuffer dest(str.size() * kMaxEscapedCharsPerChar);
   out.write(dest, EscapeStringToString(str, options, dest, nullptr));
 }
 
-void EscapeJSONStringToStream(OutputStream& out,
+void EscapeJSONStringToStream(std::ostream& out,
                               std::string_view str,
                               const EscapeOptions& options) {
   std::string dest;

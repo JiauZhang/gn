@@ -14,7 +14,6 @@
 class BuildSettings;
 class Builder;
 class Err;
-class OutputStream;
 class Target;
 
 class EclipseWriter {
@@ -26,7 +25,7 @@ class EclipseWriter {
  private:
   EclipseWriter(const BuildSettings* build_settings,
                 const Builder& builder,
-                OutputStream& out);
+                std::ostream& out);
   ~EclipseWriter();
 
   void Run();
@@ -49,7 +48,7 @@ class EclipseWriter {
   const Builder& builder_;
 
   // The output stream for the settings file.
-  OutputStream& out_;
+  std::ostream& out_;
 
   // Eclipse languages for which the include dirs and defines apply.
   std::vector<std::string> languages_;
