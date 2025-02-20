@@ -255,7 +255,7 @@ bool RunIdeWriter(const std::string& ide,
   } else if (ide == kSwitchIdeValueVs || ide == kSwitchIdeValueVs2013 ||
              ide == kSwitchIdeValueVs2015 || ide == kSwitchIdeValueVs2017 ||
              ide == kSwitchIdeValueVs2019 || ide == kSwitchIdeValueVs2022) {
-    VisualStudioWriter::Version version = VisualStudioWriter::Version::Vs2019;
+    VisualStudioWriter::Version version = VisualStudioWriter::Version::Vs2022;
     if (ide == kSwitchIdeValueVs2013)
       version = VisualStudioWriter::Version::Vs2013;
     else if (ide == kSwitchIdeValueVs2015)
@@ -533,7 +533,7 @@ IDE options
       Generate files for an IDE. Currently supported values:
       "eclipse" - Eclipse CDT settings file.
       "vs" - Visual Studio project/solution files.
-             (default Visual Studio version: 2019)
+             (default Visual Studio version: 2022)
       "vs2013" - Visual Studio 2013 project/solution files.
       "vs2015" - Visual Studio 2015 project/solution files.
       "vs2017" - Visual Studio 2017 project/solution files.
