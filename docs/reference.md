@@ -54,7 +54,6 @@
     *   [import: Import a file into the current scope.](#func_import)
     *   [label_matches: Returns whether a label matches any of a list of patterns.](#func_label_matches)
     *   [not_needed: Mark variables from scope as not needed.](#func_not_needed)
-    *   [path_exists: Returns whether the given path exists.](#func_path_exists)
     *   [pool: Defines a pool object.](#func_pool)
     *   [print: Prints to the console.](#func_print)
     *   [print_stack_trace: Prints a stack trace.](#func_print_stack_trace)
@@ -3067,23 +3066,6 @@
   not_needed(invoker, "*", [ "config" ])
   not_needed(invoker, [ "data_deps", "deps" ])
 ```
-
-### <a name="func_path_exists"></a>**path_exists**: Returns whether the given path exists.
-
-```
-  path_exists(path)
-
-  The argument is a path to a file or directory.
-```
-
-#### **Example**
-
-```
-  path_exists("//")  # true
-  path_exists("BUILD.gn")  # true
-  path_exists("/abs-non-existent")  # false
-```
-
 ### <a name="func_pool"></a>**pool**: Defines a pool object.&nbsp;[Back to Top](#gn-reference)
 
 ```

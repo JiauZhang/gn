@@ -277,14 +277,6 @@ Value RunNotNeeded(Scope* scope,
                    const ListNode* args_list,
                    Err* err);
 
-extern const char kPathExists[];
-extern const char kPathExists_HelpShort[];
-extern const char kPathExists_Help[];
-Value RunPathExists(Scope* scope,
-                    const FunctionCallNode* function,
-                    const std::vector<Value>& args,
-                    Err* err);
-
 extern const char kPool[];
 extern const char kPool_HelpShort[];
 extern const char kPool_Help[];

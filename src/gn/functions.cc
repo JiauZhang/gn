@@ -1476,7 +1476,6 @@ struct FunctionInfoInitializer {
     INSERT_FUNCTION(Import, false)
     INSERT_FUNCTION(LabelMatches, false)
     INSERT_FUNCTION(NotNeeded, false)
-    INSERT_FUNCTION(PathExists, false)
     INSERT_FUNCTION(Pool, false)
     INSERT_FUNCTION(Print, false)
     INSERT_FUNCTION(PrintStackTrace, false)
