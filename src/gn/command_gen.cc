@@ -109,12 +109,12 @@ void BackgroundDoWrite(TargetWriteInfo* write_info, const Target* target) {
   std::string rule =
       NinjaTargetWriter::RunAndWriteFile(target, resolved, ninja_outputs);
 
-  DCHECK(!rule.empty());
-
   {
     std::lock_guard<std::mutex> lock(write_info->lock);
-    write_info->rules[target->toolchain()].emplace_back(target,
-                                                        std::move(rule));
+    if (!rule.empty()) {
+      write_info->rules[target->toolchain()].emplace_back(target,
+                                                          std::move(rule));
+    }
 
     if (write_info->want_ninja_outputs) {
       write_info->ninja_outputs_map.emplace(target,
