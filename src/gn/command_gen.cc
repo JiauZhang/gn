@@ -111,10 +111,12 @@ void BackgroundDoWrite(TargetWriteInfo* write_info, const Target* target) {
 
   {
     std::lock_guard<std::mutex> lock(write_info->lock);
-    if (!rule.empty()) {
-      write_info->rules[target->toolchain()].emplace_back(target,
-                                                          std::move(rule));
-    }
+    // Even if rule is empty, add it to the map to ensure a corresponding
+    // .toolchain file will be generated, otherwise Ninja will complain
+    // when the build.ninja file tries to load a non-existent .toolchain
+    // file.
+    write_info->rules[target->toolchain()].emplace_back(target,
+                                                        std::move(rule));
 
     if (write_info->want_ninja_outputs) {
       write_info->ninja_outputs_map.emplace(target,
