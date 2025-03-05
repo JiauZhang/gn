@@ -3067,23 +3067,18 @@
   not_needed(invoker, "*", [ "config" ])
   not_needed(invoker, [ "data_deps", "deps" ])
 ```
-
-### <a name="func_path_exists"></a>**path_exists**: Returns whether the given path exists.
+### <a name="func_path_exists"></a>**path_exists**: Returns whether the given path exists.&nbsp;[Back to Top](#gn-reference)
 
 ```
   path_exists(path)
-
-  The argument is a path to a file or directory.
 ```
 
-#### **Example**
-
+#### **Examples**:
 ```
   path_exists("//")  # true
   path_exists("BUILD.gn")  # true
   path_exists("/abs-non-existent")  # false
 ```
-
 ### <a name="func_pool"></a>**pool**: Defines a pool object.&nbsp;[Back to Top](#gn-reference)
 
 ```
@@ -4262,8 +4257,8 @@
         libraries in this target. Includes any specified renamed dependencies.
 
     {{rustdeps}}
-        Expands to the list of -Ldependency=<path> strings needed to compile
-        this target.
+        Expands to the list of -Ldependency=<path> and -Clink-arg=<path> strings
+        needed to compile this target.
 
     {{rustenv}}
         Expands to the list of environment variables.
