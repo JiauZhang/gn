@@ -20,7 +20,7 @@ bool RunPathExists(Scope* scope, const std::string& path) {
   EXPECT_FALSE(err.has_error());
   return !err.has_error() && result.boolean_value();
 }
-} // namespace
+}  // namespace
 
 TEST(PathExistsTest, FileExists) {
   TestWithScope setup;
@@ -84,4 +84,3 @@ TEST(PathExistsTest, FileExistsInvalidValues) {
     EXPECT_TRUE(err.has_error());
   }
 }
-

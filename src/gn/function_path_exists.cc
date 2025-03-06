@@ -38,13 +38,11 @@ Value RunPathExists(Scope* scope,
   if (as_dir) {
     system_path = scope->settings()->build_settings()->GetFullPath(
         cur_dir.ResolveRelativeDir(
-            value, err,
-            scope->settings()->build_settings()->root_path_utf8()));
+            value, err, scope->settings()->build_settings()->root_path_utf8()));
   } else {
     system_path = scope->settings()->build_settings()->GetFullPath(
         cur_dir.ResolveRelativeFile(
-            value, err,
-            scope->settings()->build_settings()->root_path_utf8()));
+            value, err, scope->settings()->build_settings()->root_path_utf8()));
   }
   if (err->has_error()) {
     return value;
