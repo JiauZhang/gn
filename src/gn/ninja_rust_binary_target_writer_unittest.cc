@@ -1904,8 +1904,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, TransitiveRustDepsThroughSourceSet) {
         "target_output_name = exe\n"
         "\n"
         "build ./exe: rust_bin ../../linked/exe.rs | ../../linked/exe.rs "
-        "obj/sset/bar.input1.o obj/sset/module.module.pcm "
-        "obj/public/libbehind_sourceset_public.rlib "
+        "obj/sset/bar.input1.o obj/public/libbehind_sourceset_public.rlib "
         "obj/private/libbehind_sourceset_private.rlib || phony/sset/bar "
         "phony/sset/module\n"
         "  source_file_part = exe.rs\n"
@@ -1914,8 +1913,7 @@ TEST_F(NinjaRustBinaryTargetWriterTest, TransitiveRustDepsThroughSourceSet) {
         "behind_sourceset_public=obj/public/libbehind_sourceset_public.rlib\n"
         "  rustdeps = -Ldependency=obj/public -Ldependency=obj/private "
         "-Clink-arg=-Bdynamic "
-        "-Clink-arg=obj/sset/bar.input1.o "
-        "-Clink-arg=obj/sset/module.module.pcm\n"
+        "-Clink-arg=obj/sset/bar.input1.o\n"
         "  ldflags =\n"
         "  sources = ../../linked/exe.rs\n";
     std::string out_str = out.str();
