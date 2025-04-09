@@ -59,6 +59,10 @@ const char kDotfile_Help[] =
 
     gn gen out/Debug --root=/home/build --dotfile=/home/my_gn_file.gn
 
+  The system variable `gn_version` is available in the dotfile, but none of
+  the other variables are, because the dotfile is processed before args.gn
+  or anything else is processed.
+
 Variables
 
   arg_file_template [optional]
@@ -402,6 +406,9 @@ Setup::Setup()
       dotfile_settings_(&build_settings_, std::string()),
       dotfile_scope_(&dotfile_settings_) {
   dotfile_settings_.set_toolchain_label(Label());
+
+  dotfile_provider_ =
+      std::make_unique<ScopePerFileProvider>(&dotfile_scope_, false, true);
 
   build_settings_.set_item_defined_callback(
       [task_runner = scheduler_.task_runner(),

@@ -4557,7 +4557,10 @@
 ### <a name="var_gn_version"></a>**gn_version**: [number] The version of gn.&nbsp;[Back to Top](#gn-reference)
 
 ```
-  Corresponds to the number printed by `gn --version`.
+  Corresponds to the number printed by `gn --version`. This variable is
+  only variable available in the dotfile (all the rest are missing
+  because the dotfile has to be parsed before args.gn or anything else
+  is processed).
 ```
 
 #### **Example**
@@ -7103,6 +7106,7 @@
 ```
   First, system default arguments are set based on the current system. The
   built-in arguments are:
+   - gn_version
    - host_cpu
    - host_os
    - current_cpu
@@ -7111,7 +7115,8 @@
    - target_os
 
   Next, project-specific overrides are applied. These are specified inside
-  the default_args variable of //.gn. See "gn help dotfile" for more.
+  the default_args variable of //.gn. See "gn help dotfile" for more. Note
+  that during processing of the dotfile itself, only `gn_version` is defined.
 
   If specified, arguments from the --args command line flag are used. If that
   flag is not specified, args from previous builds in the build directory will
@@ -7170,6 +7175,10 @@
   --dotfile:
 
     gn gen out/Debug --root=/home/build --dotfile=/home/my_gn_file.gn
+
+  The system variable `gn_version` is available in the dotfile, but none of
+  the other variables are, because the dotfile is processed before args.gn
+  or anything else is processed.
 ```
 
 #### **Variables**
