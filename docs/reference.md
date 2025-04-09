@@ -7363,17 +7363,30 @@
      variables and default toolchain name. Any arguments, variables, defaults,
      etc. set up in this file will be visible to all files in the build.
 
-  3. Load the //BUILD.gn (in the source root directory).
+  3. Load the //BUILD.gn (in the source root directory). The BUILD.gn
+     file is executed in a scope whose parent scope is the BUILDCONFIG.gn
+     file, i.e., only the definitions in the BUILDCONFIG.gn file exist.
 
-  4. Recursively evaluate rules and load BUILD.gn in other directories as
+  4. If the BUILD.gn file imports other files, each of those other
+     files is executed in a separate scope whose parent is the BUILDCONFIG.gn
+     file, i.e., no definitions from the importing BUILD.gn file are
+     available. When the imported file has been fully processed, its scope
+     is merged into the BUILD.gn file's scope. If there is a conflict
+     (both the BUILD.gn file and the imported file define some variable
+     or rule with the same name but different values), a runtime error
+     will be thrown. See "gn help import" for more on this.
+
+  5. Recursively evaluate rules and load BUILD.gn in other directories as
      necessary to resolve dependencies. If a BUILD file isn't found in the
      specified location, GN will look in the corresponding location inside
      the secondary_source defined in the dotfile (see "gn help dotfile").
+     Each BUILD.gn file will again be executed in a new scope containing
+     only the definitions from the BUILDCONFIG.gn's scope.
 
-  5. When a target's dependencies are resolved, write out the `.ninja`
+  6. When a target's dependencies are resolved, write out the `.ninja`
      file to disk.
 
-  6. When all targets are resolved, write out the root build.ninja file.
+  7. When all targets are resolved, write out the root build.ninja file.
 
   Note that the BUILD.gn file name may be modulated by .gn arguments such as
   build_file_extension.
@@ -7395,9 +7408,14 @@
     }
 
   There is also a generic "target" function for programmatically defined types
-  (see "gn help target"). You can define new types using templates (see "gn
-  help template"). A template defines some custom code that expands to one or
-  more other targets.
+  (see "gn help target").
+
+  You can define new types using templates (see "gn help template"). A template
+  defines some custom code that expands to one or more other targets. When a
+  template is invoked, it is executed in the scope of the file that defined the
+  template (as described above). To access values from the caller's scope, you
+  must use the `invoker` variable (see "gn help template" for more on the
+  invoker).
 
   Before executing the code inside the target's { }, the target defaults are
   applied (see "gn help set_defaults"). It will inject implicit variable
