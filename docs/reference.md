@@ -7380,8 +7380,8 @@
      necessary to resolve dependencies. If a BUILD file isn't found in the
      specified location, GN will look in the corresponding location inside
      the secondary_source defined in the dotfile (see "gn help dotfile").
-     Each BUILD.gn file will again be executed in a new scope containing
-     only the definitions from the BUILDCONFIG.gn's scope.
+     Each BUILD.gn file will again be executed in a new scope whose only
+     parent is BUILDCONFIG.gn's scope.
 
   6. When a target's dependencies are resolved, write out the `.ninja`
      file to disk.
