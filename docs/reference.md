@@ -7371,12 +7371,22 @@
   2. Execute the build config file identified by .gn to set up the global
      variables and default toolchain name. Any arguments, variables, defaults,
      etc. set up in this file will be visible to all files in the build.
+     Any values set in the `default_args` scope will be merged into
+     subsequent `declare_args()` scopes and override the default values.
 
-  3. Load the //BUILD.gn (in the source root directory). The BUILD.gn
+  3. Process the --args command line option or load the arguments from
+     the args.gn file in the build directory. These values will be merged
+     into any subsequent declare_args() scope (after the `default_args`
+     are merged in) to override the default values. See `help buildargs`
+     for more on how args are handled.
+
+  4. Load the BUILDCONFIG.gn file and create a dedicated scope for it.
+
+  5. Load the //BUILD.gn (in the source root directory). The BUILD.gn
      file is executed in a scope whose parent scope is the BUILDCONFIG.gn
      file, i.e., only the definitions in the BUILDCONFIG.gn file exist.
 
-  4. If the BUILD.gn file imports other files, each of those other
+  5. If the BUILD.gn file imports other files, each of those other
      files is executed in a separate scope whose parent is the BUILDCONFIG.gn
      file, i.e., no definitions from the importing BUILD.gn file are
      available. When the imported file has been fully processed, its scope
@@ -7385,17 +7395,28 @@
      or rule with the same name but different values), a runtime error
      will be thrown. See "gn help import" for more on this.
 
-  5. Recursively evaluate rules and load BUILD.gn in other directories as
+  6. Recursively evaluate rules and load BUILD.gn in other directories as
      necessary to resolve dependencies. If a BUILD file isn't found in the
      specified location, GN will look in the corresponding location inside
      the secondary_source defined in the dotfile (see "gn help dotfile").
      Each BUILD.gn file will again be executed in a new scope whose only
      parent is BUILDCONFIG.gn's scope.
 
-  6. When a target's dependencies are resolved, write out the `.ninja`
+  7. If a target is referenced using an alternate toolchain, then
+
+     1. The toolchain file is loaded in a scope whose parent is the
+        BUILDCONFIG.gn file.
+     2. The BUILDCONFIG.gn file is re-loaded and re-parsed into a new
+        scope, with any `toolchain_args` merged into the defaults. See
+        `help buildargs` for more on how args are handled.
+     3. The BUILD.gn containing the target is then parsed as in step 5,
+        only we use the scope from step 7.2 instead of the default
+        BUILDCONFIG.gn scope.
+
+  8. When a target's dependencies are resolved, write out the `.ninja`
      file to disk.
 
-  7. When all targets are resolved, write out the root build.ninja file.
+  9. When all targets are resolved, write out the root build.ninja file.
 
   Note that the BUILD.gn file name may be modulated by .gn arguments such as
   build_file_extension.
