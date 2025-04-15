@@ -2303,6 +2303,44 @@ TEST_F(NinjaCBinaryTargetWriterTest, ModuleMapInStaticLibrary) {
   EXPECT_EQ(expected, out_str) << expected << "\n" << out_str;
 }
 
+TEST_F(NinjaCBinaryTargetWriterTest, ModuleMapInSourceSet) {
+  TestWithScope setup;
+  Err err;
+
+  TestTarget target(setup, "//foo:bar", Target::SOURCE_SET);
+  target.sources().push_back(SourceFile("//foo/bar.cc"));
+  target.sources().push_back(SourceFile("//foo/bar.modulemap"));
+  target.source_types_used().Set(SourceFile::SOURCE_CPP);
+  target.source_types_used().Set(SourceFile::SOURCE_MODULEMAP);
+  ASSERT_TRUE(target.OnResolved(&err));
+
+  std::ostringstream out;
+  NinjaCBinaryTargetWriter writer(&target, out);
+  writer.Run();
+
+  const char expected[] =
+      "defines =\n"
+      "include_dirs =\n"
+      "cflags =\n"
+      "cflags_cc =\n"
+      "root_out_dir = .\n"
+      "target_gen_dir = gen/foo\n"
+      "target_out_dir = obj/foo\n"
+      "target_output_name = bar\n"
+      "\n"
+      "build obj/foo/bar.bar.o: cxx ../../foo/bar.cc | "
+      "obj/foo/bar.bar.pcm\n"
+      "  source_file_part = bar.cc\n"
+      "  source_name_part = bar\n"
+      "build obj/foo/bar.bar.pcm: cxx_module ../../foo/bar.modulemap\n"
+      "  source_file_part = bar.modulemap\n"
+      "  source_name_part = bar\n"
+      "\n"
+      "build phony/foo/bar: phony obj/foo/bar.bar.o\n";
+  std::string out_str = out.str();
+  EXPECT_EQ(expected, out_str) << expected << "\n" << out_str;
+}
+
 // Test linking of targets containing Swift modules.
 TEST_F(NinjaCBinaryTargetWriterTest, SwiftModule) {
   Err err;
