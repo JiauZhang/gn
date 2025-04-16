@@ -209,6 +209,10 @@ def main(argv):
                             'with <ZOSLIB_DIR>/lib/libzoslib.a, and ' +
                             'add -I<ZOSLIB_DIR>/include to the compile ' +
                             'commands. See README.md for details.'))
+  args_list.add('--generate-compilation-database',
+                    action='store_true',
+                    help=('Generate compile_commands.json with ' +
+                          '`ninja -t compdb`.'))
 
   args_list.add_to_parser(parser)
   options = parser.parse_args(argv)
@@ -383,12 +387,17 @@ def WriteGenericNinja(path, static_libraries, executables,
     f.write(ninja_template)
     f.write('\n'.join(ninja_lines))
 
+  build_dir = os.path.dirname(path)
   with open(path + '.d', 'w') as f:
     f.write('build.ninja: ' +
             os.path.relpath(os.path.join(SCRIPT_DIR, 'gen.py'),
-                            os.path.dirname(path)) + ' ' +
-            os.path.relpath(template_filename, os.path.dirname(path)) + '\n')
+                            build_dir) + ' ' +
+            os.path.relpath(template_filename, build_dir) + '\n')
 
+  if options.generate_compilation_database:
+    with open(os.path.join(REPO_ROOT, 'compile_commands.json'), 'w') as f:
+      subprocess.run(
+          ['ninja', '-C', build_dir, '-t', 'compdb'], stdout=f, check=True)
 
 def WriteGNNinja(path, platform, host, options, args_list):
   if platform.is_msvc():
