@@ -1186,5 +1186,15 @@ bool Setup::FillOtherConfig(const base::CommandLine& cmdline, Err* err) {
     export_compile_commands_.push_back(std::move(pat));
   }
 
+  // Async non-linkable deps.
+  const Value* async_non_linkable_deps =
+      dotfile_scope_.GetValue("async_non_linkable_deps", true);
+  if (async_non_linkable_deps) {
+    if (!async_non_linkable_deps->VerifyTypeIs(Value::BOOLEAN, err)) {
+      return false;
+    }
+    build_settings_.set_async_non_linkable_deps(async_non_linkable_deps->boolean_value());
+  }
+
   return true;
 }
